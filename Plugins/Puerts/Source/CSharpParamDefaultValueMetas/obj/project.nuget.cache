@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "eJWL2h6tF3E=",
+  "success": true,
+  "projectFilePath": "E:\\Epic\\WorkspaceByRelease\\EqZero\\Plugins\\Puerts\\Source\\CSharpParamDefaultValueMetas\\CSharpParamDefaultValueMetas.ubtplugin.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\chenweilin\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}

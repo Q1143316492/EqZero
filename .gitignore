@@ -1,0 +1,51 @@
+# Visual Studio / VS Code / IDE
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.xcodeproj
+*.xcworkspace
+
+# Unreal Engine - Artifacts (Recursive for Plugins)
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+.vsconfig
+
+# Generated Type Definitions (Puerts)
+# These are large files generated from C++ reflection, can be regenerated.
+Typing/
+
+# Content Assets
+# Ignore all binary assets
+Content/**/*.uasset
+Content/**/*.umap
+Content/**/*.bulk
+Content/**/*.bin
+Content/**/*.db
+
+# Generated JavaScript
+# Source is in TypeScript/, compiled output goes here.
+Content/JavaScript/
+Content/**/*.js
+Content/**/*.js.map
+Content/**/*.d.ts
+
+# Ignore Developers and Collections folders
+Content/Developers/
+Content/Collections/
+
+# Ignore localization conflict reports
+Content/Localization/*
+
+# Specific Plugin Content
+Plugins/LyraExampleContent/Content/
+
+# Puerts specific
+Plugins/Puerts/ThirdParty/v8_10.6.194
+TypeScript/node_modules/

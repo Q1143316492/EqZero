@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "outDir": "../Content/JavaScript",
+        "sourceMap": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "noImplicitAny": false,
+        "typeRoots": [
+            "./Typing"
+        ]
+    },
+    "include": [
+        "./**/*",
+        "../Typing/**/*"
+    ]
+}
