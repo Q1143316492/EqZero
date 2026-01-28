@@ -80,3 +80,9 @@ UEqZeroExperienceDefinition
 然后创建game feature 并且在里面创建体验，注意项目设置和game feature的asset manager都要配置好
 
 才能够完成体验的加载，否则check一下就炸了
+
+# 3_gameinstance 完成
+
+这里有一个状态机的初始化
+
+还有一些加密的流程

@@ -22,12 +22,27 @@ public:
 
 	EQZEROGAME_API AEqZeroPlayerController* GetPrimaryPlayerController() const;
 
-	virtual bool CanJoinRequestedSession() const override;
+	EQZEROGAME_API virtual bool CanJoinRequestedSession() const override;
+	EQZEROGAME_API virtual void HandlerUserInitialized(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege, ECommonUserOnlineContext OnlineContext) override;
+
+	// 服务器 收到客户端的加密请求，返回加密密钥
+	EQZEROGAME_API virtual void ReceivedNetworkEncryptionToken(const FString& EncryptionToken, const FOnEncryptionKeyResponse& Delegate) override;
+
+	// 客户端 收到服务器确认后，设置客户端的加密密钥
+	EQZEROGAME_API virtual void ReceivedNetworkEncryptionAck(const FOnEncryptionKeyResponse& Delegate) override;
 
 protected:
 
-	virtual void Init() override;
-	virtual void Shutdown() override;
+	EQZEROGAME_API virtual void Init() override;
+	EQZEROGAME_API virtual void Shutdown() override;
+
+	// 客户端在连接服务器前将 ?EncryptionToken=xxx 添加到 URL
+	EQZEROGAME_API void OnPreClientTravelToSession(FString& URL);
+
+	/** 
+	 * 不安全，调试用的，正式的用https从服务器拿
+	 */
+	TArray<uint8> DebugTestEncryptionKey;
 
 private:
 	TSharedPtr<puerts::FJsEnv> GameScript;
