@@ -3,6 +3,8 @@
 #include "EqZeroGameState.h"
 
 #include "EqZeroLogChannels.h"
+#include "EqZeroExperienceManagerComponent.h"
+#include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroGameState)
 
@@ -16,7 +18,15 @@ AEqZeroGameState::AEqZeroGameState(const FObjectInitializer& ObjectInitializer)
 	// AbilitySystemComponent->SetIsReplicated(true);
 	// AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	// ExperienceManagerComponent = ObjectInitializer.CreateDefaultSubobject<UEqZeroExperienceManagerComponent>(this, TEXT("ExperienceManagerComponent"));
+	// 创建体验管理器组件
+	ExperienceManagerComponent = ObjectInitializer.CreateDefaultSubobject<UEqZeroExperienceManagerComponent>(this, TEXT("ExperienceManagerComponent"));
+}
+
+void AEqZeroGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEqZeroGameState, ServerFPS);
 }
 
 void AEqZeroGameState::PreInitializeComponents()

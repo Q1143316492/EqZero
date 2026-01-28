@@ -1,4 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// OK
 
 #pragma once
 
@@ -12,11 +13,16 @@ class AGameModeBase;
 class APawn;
 class APlayerController;
 class UClass;
+class UCommonUserInfo;
 class UEqZeroExperienceDefinition;
 class UEqZeroPawnData;
 class UObject;
 struct FFrame;
 struct FPrimaryAssetId;
+
+enum class ECommonSessionOnlineMode : uint8;
+enum class ECommonUserPrivilege : uint8;
+enum class ECommonUserOnlineContext : uint8;
 
 /**
  * Post login event, triggered when a player or bot joins the game as well as after seamless and non seamless travel
@@ -75,4 +81,11 @@ protected:
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const FString& ExperienceIdSource);
 
 	void HandleMatchAssignmentIfNotExpectingOne();
+
+	// TODO: 以下是专用服务器相关的方法，需要时启用
+	bool TryDedicatedServerLogin();
+	void HostDedicatedServerMatch(ECommonSessionOnlineMode OnlineMode);
+
+	UFUNCTION()
+	void OnUserInitializedForDedicatedServer(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege, ECommonUserOnlineContext OnlineContext);
 };

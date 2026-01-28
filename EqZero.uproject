@@ -118,6 +118,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "EqZeroCore",
+			"Enabled": true
 		}
 	]
 }
