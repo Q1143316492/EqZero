@@ -8,14 +8,23 @@ function DebugLog(msg: string) {
 }
 
 // =========================================================
-// 1. 全局存储 (Script Global)
-// Key: GameInstance Name
+// Define Mixin Interface to extend GameInstance
 // =========================================================
-const ServiceMap = new Map<string, GameService>();
+interface EqGameInstance extends UE.GameInstance {
+    GameService?: GameService;
+}
 
 export function GetGameService(Context: UE.Object): GameService | undefined {
-    const GI = UE.GameplayStatics.GetGameInstance(Context);
-    return GI ? ServiceMap.get(GI.GetName()) : undefined;
+    const GI = UE.GameplayStatics.GetGameInstance(Context) as EqGameInstance; // Cast to our Mixin type
+    if (GI) {
+        // Lazy initialization to ensure service exists if accessed
+        if (!GI.GameService) {
+            DebugLog(`[GetGameService] Lazy init service for ${GI.GetName()}`);
+            GI.GameService = new GameService(GI);
+        }
+        return GI.GameService;
+    }
+    return undefined;
 }
 
 // 目标蓝图
@@ -26,21 +35,25 @@ if (TargetUClass) {
     const TargetJSClass = blueprint.tojs<typeof UE.GameInstance>(TargetUClass);
 
     // =========================================================
-    // 2. Mixin: 仅负责清理 (Cleanup Only)
+    // Mixin: Lifecycle Management
     // =========================================================
     interface EqGameInstanceMixin extends UE.GameInstance {}
     class EqGameInstanceMixin {
+        
         ReceiveShutdown(): void {
-            const uid = this.GetName();
+            // Access 'this' as the runtime object
+            const self = this as unknown as EqGameInstance;
+            const uid = self.GetName();
             DebugLog(`<<< ReceiveShutdown (Name:${uid})`);
             
-            const service = ServiceMap.get(uid);
-            if (service) {
-                service.Destroy();
-                ServiceMap.delete(uid);
+            if (self.GameService) {
+                self.GameService.Destroy();
+                self.GameService = undefined;
             }
         }
     }
+    
+    // Apply the mixin to the Blueprint class
     blueprint.mixin(TargetJSClass, EqGameInstanceMixin);
     DebugLog(`Mixin applied.`);
 
@@ -49,29 +62,17 @@ if (TargetUClass) {
     // C++ Init() -> Start("Main", Args) -> 此处执行
     // =========================================================
     
-    // 封装初始化函数
-    function RegisterServiceFor(GI: UE.GameInstance) {
-
-        if (!GI) 
-        {
-            DebugLog("[Init] Error: GameInstance is null or undefined.");
-            return;
-        }
-        
-        const uid = GI.GetName();
-        // 防止重复初始化 (虽然正常逻辑下每个 GI 只会 Init 一次)
-        if (!ServiceMap.has(uid)) {
-            DebugLog(`[Init] Creating Global Service for ${GI.GetName()} (Name:${uid})`);
-            ServiceMap.set(uid, new GameService(GI));
-        } else {
-            DebugLog(`[Init] Service already exists for (Name:${uid})`);
-        }
-    }
-
     try {
-        const passedGI = argv.getByName("GameInstance") as UE.GameInstance;
+        const passedGI = argv.getByName("GameInstance") as EqGameInstance;
         if (passedGI) {
-            RegisterServiceFor(passedGI);
+            DebugLog(`[Init] Binding Service for ${passedGI.GetName()}`);
+            
+            // Initialization: Attach service directly to the instance
+            if (!passedGI.GameService) {
+                passedGI.GameService = new GameService(passedGI);
+            } else {
+                DebugLog(`[Init] Service already exists for ${passedGI.GetName()}`);
+            }
         } else {
             DebugLog("[Init] Warning: Script started but 'GameInstance' argument is missing.");
         }

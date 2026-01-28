@@ -49,3 +49,7 @@ Plugins/LyraExampleContent/Content/
 # Puerts specific
 Plugins/Puerts/ThirdParty/v8_10.6.194
 TypeScript/node_modules/
+# C# / Rider / .NET Build Artifacts
+**/obj/
+**/bin/
+*.user
