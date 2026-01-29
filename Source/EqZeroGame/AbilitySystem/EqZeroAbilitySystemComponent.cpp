@@ -1,21 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// OK
 
 #include "EqZeroAbilitySystemComponent.h"
 
 #include "Abilities/EqZeroGameplayAbility.h"
-// TODO: Uncomment when EqZeroAbilityTagRelationshipMapping is created
-// #include "AbilitySystem/EqZeroAbilityTagRelationshipMapping.h"
-// TODO: Uncomment when EqZeroAnimInstance is created
-// #include "Animation/EqZeroAnimInstance.h"
+#include "AbilitySystem/EqZeroAbilityTagRelationshipMapping.h"
+#include "Animation/EqZeroAnimInstance.h"
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
-// TODO: Uncomment when EqZeroGlobalAbilitySystem is created
-// #include "EqZeroGlobalAbilitySystem.h"
+#include "EqZeroGlobalAbilitySystem.h"
 #include "EqZeroLogChannels.h"
-// TODO: Uncomment when EqZeroAssetManager is created
-// #include "System/EqZeroAssetManager.h"
-// TODO: Uncomment when EqZeroGameData is created
-// #include "System/EqZeroGameData.h"
+#include "System/EqZeroAssetManager.h"
+#include "System/EqZeroGameData.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroAbilitySystemComponent)
 
@@ -33,29 +29,18 @@ UEqZeroAbilitySystemComponent::UEqZeroAbilitySystemComponent(const FObjectInitia
 
 void UEqZeroAbilitySystemComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// TODO: Uncomment when EqZeroGlobalAbilitySystem is created
-	/*
 	if (UEqZeroGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UEqZeroGlobalAbilitySystem>(GetWorld()))
 	{
 		GlobalAbilitySystem->UnregisterASC(this);
 	}
-	*/
 
 	Super::EndPlay(EndPlayReason);
 }
 
-bool UEqZeroAbilitySystemComponent::IsOwnerActorAuthoritative() const
-{
-	return (GetOwnerRole() == ROLE_Authority);
-}
-
-void UEqZeroAbilitySystemComponent::RemoveSpawnedAttribute(UAttributeSet* AttributeSet)
-{
-	GetSpawnedAttributes_Mutable().Remove(AttributeSet);
-}
-
 void UEqZeroAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
 {
+	// 挂在 PlayerState 上，但是由于时序，可能pawn ext 和 player state 都有可能调用过来
+
 	FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
 	check(ActorInfo);
 	check(InOwnerActor);
@@ -64,6 +49,7 @@ void UEqZeroAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, A
 
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
 
+	// 如果 avatar 变了，重新初始化
 	if (bHasNewPawnAvatar)
 	{
 		// Notify all abilities that a new pawn avatar has been set
@@ -86,21 +72,16 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		}
 
 		// Register with the global system once we actually have a pawn avatar. We wait until this time since some globally-applied effects may require an avatar.
-		// TODO: Uncomment when EqZeroGlobalAbilitySystem is created
-		/*
 		if (UEqZeroGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UEqZeroGlobalAbilitySystem>(GetWorld()))
 		{
 			GlobalAbilitySystem->RegisterASC(this);
 		}
-		*/
 
-		// TODO: Uncomment when EqZeroAnimInstance is created
-		/*
+
 		if (UEqZeroAnimInstance* EqZeroAnimInst = Cast<UEqZeroAnimInstance>(ActorInfo->GetAnimInstance()))
 		{
 			EqZeroAnimInst->InitializeWithAbilitySystem(this);
 		}
-		*/
 
 		TryActivateAbilitiesOnSpawn();
 	}
@@ -382,14 +363,11 @@ void UEqZeroAbilitySystemComponent::ApplyAbilityBlockAndCancelTags(const FGamepl
 	FGameplayTagContainer ModifiedBlockTags = BlockTags;
 	FGameplayTagContainer ModifiedCancelTags = CancelTags;
 
-	// TODO: Uncomment when EqZeroAbilityTagRelationshipMapping is created
-	/*
 	if (TagRelationshipMapping)
 	{
 		// Use the mapping to expand the ability tags into block and cancel tag
 		TagRelationshipMapping->GetAbilityTagsToBlockAndCancel(AbilityTags, &ModifiedBlockTags, &ModifiedCancelTags);
 	}
-	*/
 
 	Super::ApplyAbilityBlockAndCancelTags(AbilityTags, RequestingAbility, bEnableBlockTags, ModifiedBlockTags, bExecuteCancelTags, ModifiedCancelTags);
 
@@ -405,18 +383,13 @@ void UEqZeroAbilitySystemComponent::HandleChangeAbilityCanBeCanceled(const FGame
 
 void UEqZeroAbilitySystemComponent::GetAdditionalActivationTagRequirements(const FGameplayTagContainer& AbilityTags, FGameplayTagContainer& OutActivationRequired, FGameplayTagContainer& OutActivationBlocked) const
 {
-	// TODO: Uncomment when EqZeroAbilityTagRelationshipMapping is created
-	/*
 	if (TagRelationshipMapping)
 	{
 		TagRelationshipMapping->GetRequiredAndBlockedActivationTags(AbilityTags, &OutActivationRequired, &OutActivationBlocked);
 	}
-	*/
 }
 
-// TODO: Replace UObject with UEqZeroAbilityTagRelationshipMapping
-// void UEqZeroAbilitySystemComponent::SetTagRelationshipMapping(UEqZeroAbilityTagRelationshipMapping* NewMapping)
-void UEqZeroAbilitySystemComponent::SetTagRelationshipMapping(UObject* NewMapping)
+void UEqZeroAbilitySystemComponent::SetTagRelationshipMapping(UEqZeroAbilityTagRelationshipMapping* NewMapping)
 {
 	TagRelationshipMapping = NewMapping;
 }
@@ -513,8 +486,6 @@ void UEqZeroAbilitySystemComponent::CancelActivationGroupAbilities(EEqZeroAbilit
 
 void UEqZeroAbilitySystemComponent::AddDynamicTagGameplayEffect(const FGameplayTag& Tag)
 {
-	// TODO: Uncomment when EqZeroAssetManager and EqZeroGameData are created
-	/*
 	const TSubclassOf<UGameplayEffect> DynamicTagGE = UEqZeroAssetManager::GetSubclass(UEqZeroGameData::Get().DynamicTagGameplayEffect);
 	if (!DynamicTagGE)
 	{
@@ -534,13 +505,10 @@ void UEqZeroAbilitySystemComponent::AddDynamicTagGameplayEffect(const FGameplayT
 	Spec->DynamicGrantedTags.AddTag(Tag);
 
 	ApplyGameplayEffectSpecToSelf(*Spec);
-	*/
 }
 
 void UEqZeroAbilitySystemComponent::RemoveDynamicTagGameplayEffect(const FGameplayTag& Tag)
 {
-	// TODO: Uncomment when EqZeroAssetManager and EqZeroGameData are created
-	/*
 	const TSubclassOf<UGameplayEffect> DynamicTagGE = UEqZeroAssetManager::GetSubclass(UEqZeroGameData::Get().DynamicTagGameplayEffect);
 	if (!DynamicTagGE)
 	{
@@ -552,7 +520,6 @@ void UEqZeroAbilitySystemComponent::RemoveDynamicTagGameplayEffect(const FGamepl
 	Query.EffectDefinition = DynamicTagGE;
 
 	RemoveActiveEffects(Query);
-	*/
 }
 
 void UEqZeroAbilitySystemComponent::GetAbilityTargetData(const FGameplayAbilitySpecHandle AbilityHandle, FGameplayAbilityActivationInfo ActivationInfo, FGameplayAbilityTargetDataHandle& OutTargetDataHandle)

@@ -18,16 +18,26 @@ public:
 
 	UEqZeroLocalPlayer();
 
-    //~UObject interface
-    virtual void PostInitProperties() override;
-    //~End of UObject interface
+	//~UObject interface
+	virtual void PostInitProperties() override;
+	//~End of UObject interface
 
-    //~UPlayer interface
-    virtual void SwitchController(class APlayerController* PC) override;
-    //~End of UPlayer interface
+	//~UPlayer interface
+	virtual void SwitchController(class APlayerController* PC) override;
+	//~End of UPlayer interface
 
-    //~ULocalPlayer interface
-    virtual bool SpawnPlayActor(const FString& URL, FString& OutError, UWorld* InWorld) override;
+	//~ULocalPlayer interface
+	virtual bool SpawnPlayActor(const FString& URL, FString& OutError, UWorld* InWorld) override;
+
+	public:
+	UFUNCTION()
+	UEqZeroSettingsShared* GetSharedSettings() const;
+
+protected:
+	void OnSharedSettingsChanged(UEqZeroSettingsShared* Settings);
+
+	UPROPERTY(Transient)
+	TObjectPtr<UEqZeroSettingsShared> SharedSettings;
     virtual void InitOnlineSession() override;
     //~End of ULocalPlayer interface
 };

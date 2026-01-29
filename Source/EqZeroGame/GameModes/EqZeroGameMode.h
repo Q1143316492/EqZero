@@ -1,4 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// 总结一下就是体验加载和重生相关的代码
 // OK
 
 #pragma once
@@ -82,8 +83,8 @@ protected:
 
 	void HandleMatchAssignmentIfNotExpectingOne();
 
-	// TODO: 以下是专用服务器相关的方法，需要时启用
 	bool TryDedicatedServerLogin();
+
 	void HostDedicatedServerMatch(ECommonSessionOnlineMode OnlineMode);
 
 	UFUNCTION()

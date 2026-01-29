@@ -1,0 +1,203 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+// OK
+
+#pragma once
+
+#include "AbilitySystemInterface.h"
+#include "GameplayCueInterface.h"
+#include "GameplayTagAssetInterface.h"
+#include "ModularCharacter.h"
+
+#include "EqZeroCharacter.generated.h"
+
+#define UE_API EQZEROGAME_API
+
+class AActor;
+class AController;
+class AEqZeroPlayerController;
+class AEqZeroPlayerState;
+class FLifetimeProperty;
+class IRepChangedPropertyTracker;
+class UAbilitySystemComponent;
+class UInputComponent;
+class UEqZeroAbilitySystemComponent;
+class UEqZeroCameraComponent;
+class UEqZeroHealthComponent;
+class UEqZeroPawnExtensionComponent;
+class UObject;
+struct FFrame;
+struct FGameplayTag;
+struct FGameplayTagContainer;
+
+
+/**
+ * FEqZeroReplicatedAcceleration: 把加速度压缩成极坐标，这样在网络传输中能省一点带宽
+ */
+USTRUCT()
+struct FEqZeroReplicatedAcceleration
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint8 AccelXYRadians = 0;	// Direction of XY accel component, quantized to represent [0, 2*pi]
+
+	UPROPERTY()
+	uint8 AccelXYMagnitude = 0;	//Accel rate of XY component, quantized to represent [0, MaxAcceleration]
+
+	UPROPERTY()
+	int8 AccelZ = 0;	// Raw Z accel rate component, quantized to represent [-MaxAcceleration, MaxAcceleration]
+};
+
+/** 用于优化网络传输的一个移动数据结构 */
+USTRUCT()
+struct FSharedRepMovement
+{
+	GENERATED_BODY()
+
+	FSharedRepMovement();
+
+	bool FillForCharacter(ACharacter* Character);
+	bool Equals(const FSharedRepMovement& Other, ACharacter* Character) const;
+
+	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess);
+
+	UPROPERTY(Transient)
+	FRepMovement RepMovement;
+
+	UPROPERTY(Transient)
+	float RepTimeStamp = 0.0f;
+
+	UPROPERTY(Transient)
+	uint8 RepMovementMode = 0;
+
+	UPROPERTY(Transient)
+	bool bProxyIsJumpForceApplied = false;
+
+	UPROPERTY(Transient)
+	bool bIsCrouched = false;
+};
+
+template<>
+struct TStructOpsTypeTraits<FSharedRepMovement> : public TStructOpsTypeTraitsBase2<FSharedRepMovement>
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithNetSharedSerialization = true,
+	};
+};
+
+/**
+ * AEqZeroCharacter
+ *
+ */
+UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
+class AEqZeroCharacter : public AModularCharacter, public IAbilitySystemInterface, public IGameplayCueInterface, public IGameplayTagAssetInterface
+{
+	GENERATED_BODY()
+
+public:
+
+	UE_API AEqZeroCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	/**
+	 * Getter
+	 */
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Character")
+	UE_API AEqZeroPlayerController* GetEqZeroPlayerController() const;
+
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Character")
+	UE_API AEqZeroPlayerState* GetEqZeroPlayerState() const;
+
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Character")
+	UE_API UEqZeroAbilitySystemComponent* GetEqZeroAbilitySystemComponent() const;
+	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	/**
+	 * Tag interface
+	 */
+	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+
+	UE_API void ToggleCrouch();
+
+	//~AActor interface
+	UE_API virtual void PreInitializeComponents() override;
+	UE_API virtual void BeginPlay() override;
+	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	UE_API virtual void Reset() override;
+	UE_API virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UE_API virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
+	//~End of AActor interface
+
+	//~APawn interface
+	UE_API virtual void NotifyControllerChanged() override;
+	//~End of APawn interface
+
+	UFUNCTION(NetMulticast, unreliable)
+	UE_API void FastSharedReplication(const FSharedRepMovement& SharedRepMovement);
+
+	FSharedRepMovement LastSharedReplication;
+
+	UE_API virtual bool UpdateSharedReplication();
+
+protected:
+
+	UE_API virtual void OnAbilitySystemInitialized();
+	UE_API virtual void OnAbilitySystemUninitialized();
+
+	UE_API virtual void PossessedBy(AController* NewController) override;
+	UE_API virtual void UnPossessed() override;
+
+	UE_API virtual void OnRep_Controller() override;
+	UE_API virtual void OnRep_PlayerState() override;
+
+	UE_API virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	UE_API void InitializeGameplayTags();
+
+	UE_API virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+
+	UFUNCTION()
+	UE_API virtual void OnDeathStarted(AActor* OwningActor);
+
+	UFUNCTION()
+	UE_API virtual void OnDeathFinished(AActor* OwningActor);
+
+	UE_API void DisableMovementAndCollision();
+	UE_API void DestroyDueToDeath();
+	UE_API void UninitAndDestroy();
+
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
+	UE_API void K2_OnDeathFinished();
+
+	UE_API virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
+	UE_API void SetMovementModeTag(EMovementMode MovementMode, uint8 CustomMovementMode, bool bTagEnabled);
+
+	UE_API virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	UE_API virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	UE_API virtual bool CanJumpInternal_Implementation() const;
+
+private:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEqZeroPawnExtensionComponent> PawnExtComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEqZeroHealthComponent> HealthComponent;
+
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UEqZeroCameraComponent> CameraComponent;
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_ReplicatedAcceleration)
+	FEqZeroReplicatedAcceleration ReplicatedAcceleration;
+
+private:
+	UFUNCTION()
+	UE_API void OnRep_ReplicatedAcceleration();
+};
+
+#undef UE_API

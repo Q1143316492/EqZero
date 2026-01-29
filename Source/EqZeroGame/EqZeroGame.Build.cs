@@ -45,7 +45,9 @@ public class EqZeroGame : ModuleRules
 				"Niagara",
 				"AsyncMixin",
 				"ControlFlows",
-				"PropertyPath"
+				"PropertyPath",
+				"EnhancedInput",
+				"InputCore"
 			}
 		);
 

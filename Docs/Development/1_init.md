@@ -86,3 +86,32 @@ UEqZeroExperienceDefinition
 这里有一个状态机的初始化
 
 还有一些加密的流程
+
+# 4_把gameplay的核心几个了类搞出来
+
+UAsyncAction_ExperienceReady 直接搞过来，蓝图中可以用这个异步节点来保证逻辑执行的时候体验已经加载完成
+
+GameFeatureAction目录下直接搞过来，都是比较通用的action
+
+由于一下关联，UEqZeroInputConfig 只是一个DA 然后 Hotfix 文件夹，也是比较固定不用改的
+
+GameStateClass
+AbilitySystemComponent 顺带建一个空类
+GameSessionClass 这里没什么用，OK
+PlayerControllerClass
+ReplaySpectatorPlayerControllerClass 录像先不要
+PlayerStateClass
+DefaultPawnClass(character)
+HUDClass
+
+小总结一下
+
+GameState
+	- 处理玩法数据，例如切关卡的时候删除机器人和非激活玩家的player state
+	- 也挂了个ASC为什么
+
+PlayerState
+	ASC组件，属性集(生命值,伤害,治疗)，队伍[X]，玩家链接状态，PawnData
+
+
+状态机初始化
