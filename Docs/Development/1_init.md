@@ -89,29 +89,46 @@ UEqZeroExperienceDefinition
 
 # 4_把gameplay的核心几个了类搞出来
 
-UAsyncAction_ExperienceReady 直接搞过来，蓝图中可以用这个异步节点来保证逻辑执行的时候体验已经加载完成
+把很多关联类搞了出来，做一个分类是玩家，系统，UI
 
-GameFeatureAction目录下直接搞过来，都是比较通用的action
+- AEqZeroCharacter
 
-由于一下关联，UEqZeroInputConfig 只是一个DA 然后 Hotfix 文件夹，也是比较固定不用改的
+	- AEqZeroCharacter
 
-GameStateClass
-AbilitySystemComponent 顺带建一个空类
-GameSessionClass 这里没什么用，OK
-PlayerControllerClass
-ReplaySpectatorPlayerControllerClass 录像先不要
-PlayerStateClass
-DefaultPawnClass(character)
-HUDClass
+	- UEqZeroHealthComponent
 
-小总结一下
+	- UEqZeroHeroComponent
 
-GameState
-	- 处理玩法数据，例如切关卡的时候删除机器人和非激活玩家的player state
-	- 也挂了个ASC为什么
+	- UEqZeroPawnExtensionComponent
 
-PlayerState
-	ASC组件，属性集(生命值,伤害,治疗)，队伍[X]，玩家链接状态，PawnData
+- AEqZeroPlayerController
+
+- AEqZeroPlayerState
+
+- UEqZeroLocalPlayer
 
 
-状态机初始化
+动画，摄像机，技能先放一放
+
+===
+
+系统
+
+- AEqZeroGameMode
+
+- AEqZeroGameState
+
+	- UEqZeroExperienceManagerComponent
+
+===
+
+UI，设置归一类，剩下的非重要模块，比如队伍。
+
+然后能过编译
+
+# 5_两个设置类
+
+还有两个 settings local(需要ini配置，本质是GameUserSettings子类) 和 shared settings
+
+目前基本是空类。。。
+
