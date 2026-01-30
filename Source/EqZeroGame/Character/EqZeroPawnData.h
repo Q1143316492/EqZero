@@ -1,4 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// OK
 
 #pragma once
 
@@ -8,10 +9,9 @@
 
 class APawn;
 class UEqZeroAbilitySet;
-// TODO: Uncomment when created
-// class UEqZeroAbilityTagRelationshipMapping;
-// class UEqZeroCameraMode;
-// class UEqZeroInputConfig;
+class UEqZeroAbilityTagRelationshipMapping;
+class UEqZeroCameraMode;
+class UEqZeroInputConfig;
 class UObject;
 
 
@@ -38,20 +38,11 @@ public:
 	TArray<TObjectPtr<UEqZeroAbilitySet>> AbilitySets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EqZero|Abilities")
-    
-	// TODO: Uncomment when created
-	// TObjectPtr<UEqZeroAbilityTagRelationshipMapping> TagRelationshipMapping;
-	TObjectPtr<UObject> TagRelationshipMapping;
+	TObjectPtr<UEqZeroAbilityTagRelationshipMapping> TagRelationshipMapping;
 
-	// Input configuration used by player controlled pawns to create input mappings and bind input actions.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EqZero|Input")
-	// TODO: Uncomment when created
-	// TObjectPtr<UEqZeroInputConfig> InputConfig;
-	TObjectPtr<UObject> InputConfig;
+	TObjectPtr<UEqZeroInputConfig> InputConfig;
 
-	// Default camera mode used by player controlled pawns.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EqZero|Camera")
-	// TODO: Uncomment when created
-	// TSubclassOf<UEqZeroCameraMode> DefaultCameraMode;
-	TSubclassOf<UObject> DefaultCameraMode;
+	TSubclassOf<UEqZeroCameraMode> DefaultCameraMode;
 };

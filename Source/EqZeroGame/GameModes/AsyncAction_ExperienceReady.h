@@ -14,8 +14,7 @@ struct FFrame;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FExperienceReadyAsyncDelegate);
 
 /**
- * Asynchronously waits for the game state to be ready and valid and then calls the OnReady event.  Will call OnReady
- * immediately if the game state is valid already.
+ * 在蓝图中等待体验加载完成再继续执行的蓝图异步节点
  */
 UCLASS()
 class UAsyncAction_ExperienceReady : public UBlueprintAsyncActionBase
@@ -23,7 +22,6 @@ class UAsyncAction_ExperienceReady : public UBlueprintAsyncActionBase
 	GENERATED_UCLASS_BODY()
 
 public:
-	// Waits for the experience to be determined and loaded
 	UFUNCTION(BlueprintCallable, meta=(WorldContext = "WorldContextObject", BlueprintInternalUseOnly="true"))
 	static UAsyncAction_ExperienceReady* WaitForExperienceReady(UObject* WorldContextObject);
 

@@ -12,8 +12,6 @@ class UAbilitySystemComponent;
 
 /**
  * UEqZeroAnimInstance
- *
- *      The base game animation instance class used by this project.
  */
 UCLASS(Config = Game)
 class UEqZeroAnimInstance : public UAnimInstance

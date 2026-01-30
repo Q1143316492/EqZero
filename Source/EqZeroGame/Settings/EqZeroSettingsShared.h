@@ -19,7 +19,13 @@ class EQZEROGAME_API UEqZeroSettingsShared : public UObject
 	GENERATED_BODY()
 
 public:
-	UEqZeroSettingsShared() {};
+	UEqZeroSettingsShared() = default;
 
+	UFUNCTION()
+	bool GetForceFeedbackEnabled() const { return bForceFeedbackEnabled; }
+	
 	FOnEqZeroSettingChanged OnSettingChanged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game|Feedback")
+	uint32 bForceFeedbackEnabled:1;
 };

@@ -122,6 +122,8 @@ void AEqZeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	FDoRepLifetimeParams SharedParams;
+
+	// MARK_PROPERTY_DIRTY_FROM_NAME 标记dirty才会同步，传统 polling 模型
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, PawnData, SharedParams);

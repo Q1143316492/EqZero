@@ -20,7 +20,7 @@
 #include "Misc/CommandLine.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
-#include "Development/EqDeveloperSettings.h"
+#include "Development/EqZeroDeveloperSettings.h"
 #include "CommonUserSubsystem.h"
 #include "CommonSessionSubsystem.h"
 #include "GameMapsSettings.h"
@@ -115,7 +115,7 @@ void AEqZeroGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	// 检查开发者设置（仅限PIE）
 	if (!ExperienceId.IsValid() && World->IsPlayInEditor())
 	{
-		ExperienceId = GetDefault<UEqDeveloperSettings>()->ExperienceOverride;
+		ExperienceId = GetDefault<UEqZeroDeveloperSettings>()->ExperienceOverride;
 		ExperienceIdSource = TEXT("DeveloperSettings");
 	}
 

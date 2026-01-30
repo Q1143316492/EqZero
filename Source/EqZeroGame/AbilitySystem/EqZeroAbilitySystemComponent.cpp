@@ -503,7 +503,6 @@ void UEqZeroAbilitySystemComponent::AddDynamicTagGameplayEffect(const FGameplayT
 	}
 
 	Spec->DynamicGrantedTags.AddTag(Tag);
-
 	ApplyGameplayEffectSpecToSelf(*Spec);
 }
 

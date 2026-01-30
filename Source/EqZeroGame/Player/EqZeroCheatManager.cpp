@@ -1,4 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// OK
 
 #include "EqZeroCheatManager.h"
 #include "GameFramework/Pawn.h"
@@ -15,7 +16,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Character/EqZeroHealthComponent.h"
 #include "Character/EqZeroPawnExtensionComponent.h"
-// #include "System/EqZeroSystemStatics.h"
+#include "System/EqZeroSystemStatics.h"
 #include "Development/EqZeroDeveloperSettings.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroCheatManager)
@@ -103,7 +104,7 @@ void UEqZeroCheatManager::CheatAll(const FString& Msg)
 
 void UEqZeroCheatManager::PlayNextGame()
 {
-	// UEqZeroSystemStatics::PlayNextGame(this);
+	UEqZeroSystemStatics::PlayNextGame(this);
 }
 
 void UEqZeroCheatManager::EnableDebugCamera()

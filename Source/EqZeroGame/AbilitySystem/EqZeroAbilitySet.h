@@ -75,8 +75,6 @@ public:
 
 /**
  * FEqZeroAbilitySet_GrantedHandles
- *
- *      Data used to store handles to what has been granted by the ability set.
  */
 USTRUCT(BlueprintType)
 struct FEqZeroAbilitySet_GrantedHandles

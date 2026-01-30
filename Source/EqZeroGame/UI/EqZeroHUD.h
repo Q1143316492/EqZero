@@ -14,11 +14,8 @@ class UObject;
 
 /**
  * AEqZeroHUD
- *
- *  Note that you typically do not need to extend or modify this class, instead you would
- *  use an "Add Widget" action in your experience to add a HUD layout and widgets to it
- *
- *  This class exists primarily for debug rendering
+ * 这个项目中 HUD 主要用来调试
+ * UI 的逻辑你应该从 game future 上处理
  */
 UCLASS(Config = Game)
 class AEqZeroHUD : public AHUD

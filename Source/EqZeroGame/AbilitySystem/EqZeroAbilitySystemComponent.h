@@ -58,17 +58,18 @@ public:
 	UE_API void ClearAbilityInput();
 
 	/**
-	 * 
+	 * 技能组
 	 */
 	UE_API bool IsActivationGroupBlocked(EEqZeroAbilityActivationGroup Group) const;
 	UE_API void AddAbilityToActivationGroup(EEqZeroAbilityActivationGroup Group, UEqZeroGameplayAbility* EqZeroAbility);
 	UE_API void RemoveAbilityFromActivationGroup(EEqZeroAbilityActivationGroup Group, UEqZeroGameplayAbility* EqZeroAbility);
 	UE_API void CancelActivationGroupAbilities(EEqZeroAbilityActivationGroup Group, UEqZeroGameplayAbility* IgnoreEqZeroAbility, bool bReplicateCancelAbility);
 
-	// Uses a gameplay effect to add the specified dynamic granted tag.
+	/*
+	 *  GameData 配置了一下动态标签玩法效果
+	 */
+	
 	UE_API void AddDynamicTagGameplayEffect(const FGameplayTag& Tag);
-
-	// Removes all active instances of the gameplay effect that was used to add the specified dynamic granted tag.
 	UE_API void RemoveDynamicTagGameplayEffect(const FGameplayTag& Tag);
 
 	/** Gets the ability target data associated with the given ability handle and activation info */

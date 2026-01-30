@@ -15,8 +15,6 @@ class UObject;
 
 /**
  * UEqZeroInputComponent
- *
- *      Component used to manage input mappings and bindings using an input config data asset.
  */
 UCLASS(Config = Input)
 class UEqZeroInputComponent : public UEnhancedInputComponent

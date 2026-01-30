@@ -26,8 +26,6 @@ struct FFrame;
 
 /**
  * AEqZeroPlayerController
- *
- *      The base player controller class used by this project.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base player controller class used by this project."))
 class AEqZeroPlayerController : public ACommonPlayerController, public IEqZeroCameraAssistInterface, public IEqZeroTeamAgentInterface
@@ -53,6 +51,7 @@ public:
 
 	/**
 	 * 指令
+	 * - 父类的方法可以直接调用，但是抽出来应该是想加一些检查，但是目前没有
 	 */
 
 	UFUNCTION(Reliable, Server, WithValidation)

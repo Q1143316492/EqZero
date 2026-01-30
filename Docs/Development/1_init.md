@@ -26,7 +26,7 @@ DefaultUIPolicyClass=/Game/UI/B_EqZeroUIPolicy.B_EqZeroUIPolicy_C
 接下来我们要把体验的加载流程搞出来
 但是由于一些关联类还没有，先做一些准备工作
 
-- UEqDeveloperSettings 只是一个配置面板，能够覆盖一些参数，这里只是数值，使用要逻辑自己写
+- UEqZeroDeveloperSettings 只是一个配置面板，能够覆盖一些参数，这里只是数值，使用要逻辑自己写
 
 ```cpp
 	/**

@@ -38,10 +38,10 @@ namespace EqZero
 AEqZeroPlayerController::AEqZeroPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// PlayerCameraManagerClass = AEqZeroPlayerCameraManager::StaticClass(); // TODO
+	PlayerCameraManagerClass = AEqZeroPlayerCameraManager::StaticClass();
 
 #if USING_CHEAT_MANAGER
-	// CheatClass = UEqZeroCheatManager::StaticClass(); // TODO
+	CheatClass = UEqZeroCheatManager::StaticClass();
 #endif // #if USING_CHEAT_MANAGER
 }
 
@@ -85,7 +85,6 @@ void AEqZeroPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// If we are auto running then add some player input
 	if (GetIsAutoRunning())
 	{
 		if (APawn* CurrentPawn = GetPawn())
@@ -97,26 +96,22 @@ void AEqZeroPlayerController::PlayerTick(float DeltaTime)
 	}
 
 	AEqZeroPlayerState* EqZeroPlayerState = GetEqZeroPlayerState();
-
 	if (PlayerCameraManager && EqZeroPlayerState)
 	{
-		APawn* TargetPawn = PlayerCameraManager->GetViewTargetPawn();
-
-		if (TargetPawn)
+		if (APawn* TargetPawn = PlayerCameraManager->GetViewTargetPawn())
 		{
-			// Update view rotation on the server so it replicates
 			if (HasAuthority() || TargetPawn->IsLocallyControlled())
 			{
+				// 优化。这个Rotation不是自动同步的，要手动调用一下，检查旋转是否有值的变化在触发
 				EqZeroPlayerState->SetReplicatedViewRotation(TargetPawn->GetViewRotation());
 			}
 
-			// Update the target view rotation if the pawn isn't locally controlled
 			if (!TargetPawn->IsLocallyControlled())
 			{
+				// 然后客户端在拿到这个值
 				EqZeroPlayerState = TargetPawn->GetPlayerState<AEqZeroPlayerState>();
 				if (EqZeroPlayerState)
 				{
-					// Get it from the spectated pawn's player state, which may not be the same as the PC's playerstate
 					TargetViewRotation = EqZeroPlayerState->GetReplicatedViewRotation();
 				}
 			}
@@ -147,9 +142,14 @@ void AEqZeroPlayerController::OnPlayerStateChanged()
 
 void AEqZeroPlayerController::BroadcastOnPlayerStateChanged()
 {
+	/*
+	 * 客户端首次连接。无缝漫游，关卡切换。掉线重新登录。PlayerState 可能会改变。
+	 * 
+	 */
+	
 	OnPlayerStateChanged();
 
-	// Unbind from the old player state, if any
+	// 旧的 PlayerState 解绑
 	FGenericTeamId OldTeamID = FGenericTeamId::NoTeam;
 	if (LastSeenPlayerState != nullptr)
 	{
@@ -160,7 +160,7 @@ void AEqZeroPlayerController::BroadcastOnPlayerStateChanged()
 		}
 	}
 
-	// Bind to the new player state, if any
+	// 绑定新的 PlayerState（如果有的话）
 	FGenericTeamId NewTeamID = FGenericTeamId::NoTeam;
 	if (PlayerState != nullptr)
 	{
@@ -171,9 +171,7 @@ void AEqZeroPlayerController::BroadcastOnPlayerStateChanged()
 		}
 	}
 
-	// Broadcast the team change (if it really has)
 	ConditionalBroadcastTeamChanged(this, OldTeamID, NewTeamID);
-
 	LastSeenPlayerState = PlayerState;
 }
 
@@ -197,6 +195,9 @@ void AEqZeroPlayerController::OnRep_PlayerState()
 	// When we're a client connected to a remote server, the player controller may replicate later than the PlayerState and AbilitySystemComponent.
 	// However, TryActivateAbilitiesOnSpawn depends on the player controller being replicated in order to check whether on-spawn abilities should
 	// execute locally. Therefore once the PlayerController exists and has resolved the PlayerState, try once again to activate on-spawn abilities.
+	// 当我们作为客户端连接到远程服务器时，玩家控制器的复制可能晚于玩家状态和能力系统组件
+	// 然而，TryActivateAbilitiesOnSpawn（生成时尝试激活技能）的运行依赖于玩家控制器的复制，以便检查是否应该激活生成时的技能。
+	// 因此，一旦玩家控制器存在并解析了玩家状态，就再次尝试激活生成时的技能。
 	if (GetWorld()->IsNetMode(NM_Client))
 	{
 		if (AEqZeroPlayerState* EqZeroPS = GetPlayerState<AEqZeroPlayerState>())
@@ -223,11 +224,10 @@ void AEqZeroPlayerController::SetPlayer(UPlayer* InPlayer)
 	}
 }
 
-// TODO
-// void AEqZeroPlayerController::OnSettingsChanged(UEqZeroSettingsShared* InSettings)
-// {
-// 	bForceFeedbackEnabled = InSettings->GetForceFeedbackEnabled();
-// }
+void AEqZeroPlayerController::OnSettingsChanged(UEqZeroSettingsShared* InSettings)
+{
+	bForceFeedbackEnabled = InSettings->GetForceFeedbackEnabled();
+}
 
 void AEqZeroPlayerController::AddCheats(bool bForce)
 {
@@ -461,14 +461,6 @@ FOnEqZeroTeamIndexChangedDelegate& AEqZeroPlayerController::GetTeamChangedDelega
 void AEqZeroPlayerController::OnPlayerStateChangedTeam(UObject* Producer, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID)
 {
 	ConditionalBroadcastTeamChanged(this, OldTeamID, NewTeamID);
-}
-
-void AEqZeroPlayerController::OnSettingsChanged(UEqZeroSettingsShared* Settings)
-{
-	if (IsLocalPlayerController())
-	{
-		// Update settings
-	}
 }
 
 void AEqZeroPlayerController::ConditionalBroadcastTeamChanged(TScriptInterface<IEqZeroTeamAgentInterface> This, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID)

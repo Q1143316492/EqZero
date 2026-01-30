@@ -10,9 +10,6 @@
 struct FGameplayTagStackContainer;
 struct FNetDeltaSerializeInfo;
 
-/**
- * Represents one stack of a gameplay tag (tag + count)
- */
 USTRUCT(BlueprintType)
 struct FGameplayTagStack : public FFastArraySerializerItem
 {
@@ -39,7 +36,6 @@ private:
 	int32 StackCount = 0;
 };
 
-/** Container of gameplay tag stacks */
 USTRUCT(BlueprintType)
 struct FGameplayTagStackContainer : public FFastArraySerializer
 {
@@ -51,24 +47,20 @@ struct FGameplayTagStackContainer : public FFastArraySerializer
 	}
 
 public:
-	// Adds a specified number of stacks to the tag (does nothing if StackCount is below 1)
 	void AddStack(FGameplayTag Tag, int32 StackCount);
-
-	// Removes a specified number of stacks from the tag (does nothing if StackCount is below 1)
 	void RemoveStack(FGameplayTag Tag, int32 StackCount);
 
-	// Returns the stack count of the specified tag (or 0 if the tag is not present)
 	int32 GetStackCount(FGameplayTag Tag) const
 	{
 		return TagToCountMap.FindRef(Tag);
 	}
 
-	// Returns true if there is at least one stack of the specified tag
 	bool ContainsTag(FGameplayTag Tag) const
 	{
 		return TagToCountMap.Contains(Tag);
 	}
 
+	// 客户端调用会更新客户端的这个 map
 	//~FFastArraySerializer contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
@@ -81,11 +73,11 @@ public:
 	}
 
 private:
-	// Replicated list of gameplay tag stacks
+	// 感觉一个是拿来查的，一个是同步用的，两个是一样的东西
+
 	UPROPERTY()
 	TArray<FGameplayTagStack> Stacks;
 
-	// Accelerated list of tag stacks for queries
 	TMap<FGameplayTag, int32> TagToCountMap;
 };
 
