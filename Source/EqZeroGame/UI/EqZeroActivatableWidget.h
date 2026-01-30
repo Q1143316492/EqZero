@@ -17,7 +17,8 @@ enum class EEqZeroWidgetInputMode : uint8
 	Menu
 };
 
-// An activatable widget that automatically drives the desired input config when activated
+// 基本上所有 UI 都要继承这个类了
+// 项目的层级EEqZeroWidgetInputMode的输入模式，到CommonUI的输入模式做一个映射
 UCLASS(Abstract, Blueprintable)
 class UEqZeroActivatableWidget : public UCommonActivatableWidget
 {
