@@ -132,3 +132,19 @@ UI，设置归一类，剩下的非重要模块，比如队伍。
 
 目前基本是空类。。。
 
+TODO ini 还没配置
+
+# 6_登录与界面加载
+
+Lyra_Plugins_CommonLoadingScreen
+里面可以配置一个loading screen 还有一些原因更新显示的流程(skip先不做吧)
+
+登录，从game state comp 里面到推送登入界面上来
+
+Lyra UI登录流程 这篇文章。
+这一步多了
+UEqZeroActivatableWidget
+UEqZeroButtonBase
+UEqZeroFrontendStateComponent
+
+DS模式下为什么主界面出不来
