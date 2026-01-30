@@ -84,7 +84,7 @@ void UEqZeroFrontendStateComponent::OnExperienceLoaded(const UEqZeroExperienceDe
 	FControlFlow& Flow = FControlFlowStatics::Create(this, TEXT("FrontendFlow"))
 		.QueueStep(TEXT("Wait For User Initialization"), this, &ThisClass::FlowStep_WaitForUserInitialization)
 		.QueueStep(TEXT("Try Show Press Start Screen"), this, &ThisClass::FlowStep_TryShowPressStartScreen)
-		.QueueStep(TEXT("Try Join Requested Session"), this, &ThisClass::FlowStep_TryJoinRequestedSession)
+		//.QueueStep(TEXT("Try Join Requested Session"), this, &ThisClass::FlowStep_TryJoinRequestedSession) // 纯 DS 模式通常不需要这个平台Session匹配
 		.QueueStep(TEXT("Try Show Main Screen"), this, &ThisClass::FlowStep_TryShowMainScreen);
 
 	Flow.ExecuteFlow();
@@ -148,10 +148,6 @@ void UEqZeroFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlo
 		}
 	}
 
-	InProgressPressStartScreen = SubFlow;
-	UserSubsystem->OnUserInitializeComplete.AddDynamic(this, &ThisClass::OnUserInitialized);
-	UserSubsystem->TryToInitializeForLocalPlay(0, FInputDeviceId(), false);
-	
 	// 判断主机平台是否需要按开始键
 	if (!UserSubsystem->ShouldWaitForStartInput())
 	{
