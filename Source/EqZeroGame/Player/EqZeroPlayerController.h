@@ -103,16 +103,14 @@ private:
 	//~IEqZeroTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
-	virtual FOnEqZeroTeamIndexChangedDelegate& GetTeamChangedDelegateChecked() override;
+	virtual FOnEqZeroTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~End of IEqZeroTeamAgentInterface interface
 
 	UFUNCTION()
-	void OnPlayerStateChangedTeam(UObject* Producer, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID);
+	void OnPlayerStateChangedTeam(UObject* Producer, int32 OldTeamID, int32 NewTeamID);
 
 protected:
 	void OnSettingsChanged(UEqZeroSettingsShared* Settings);
-
-	void ConditionalBroadcastTeamChanged(TScriptInterface<IEqZeroTeamAgentInterface> This, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID);
 
 	UE_API virtual void OnPlayerStateChanged();
 

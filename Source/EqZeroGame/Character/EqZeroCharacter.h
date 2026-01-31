@@ -7,6 +7,7 @@
 #include "GameplayCueInterface.h"
 #include "GameplayTagAssetInterface.h"
 #include "ModularCharacter.h"
+#include "Teams/EqZeroTeamAgentInterface.h"
 
 #include "EqZeroCharacter.generated.h"
 
@@ -92,7 +93,12 @@ struct TStructOpsTypeTraits<FSharedRepMovement> : public TStructOpsTypeTraitsBas
  *
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AEqZeroCharacter : public AModularCharacter, public IAbilitySystemInterface, public IGameplayCueInterface, public IGameplayTagAssetInterface
+class AEqZeroCharacter : 
+	public AModularCharacter, 
+	public IAbilitySystemInterface, 
+	public IGameplayCueInterface, 
+	public IGameplayTagAssetInterface, 
+	public IEqZeroTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -121,6 +127,7 @@ public:
 	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 
+	// Crouch
 	UE_API void ToggleCrouch();
 
 	//~AActor interface
@@ -135,6 +142,12 @@ public:
 	//~APawn interface
 	UE_API virtual void NotifyControllerChanged() override;
 	//~End of APawn interface
+
+	//~IEqZeroTeamAgentInterface interface
+	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	UE_API virtual FGenericTeamId GetGenericTeamId() const override;
+	UE_API virtual FOnEqZeroTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~End of IEqZeroTeamAgentInterface interface
 
 	UFUNCTION(NetMulticast, unreliable)
 	UE_API void FastSharedReplication(const FSharedRepMovement& SharedRepMovement);
@@ -189,15 +202,24 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UEqZeroHealthComponent> HealthComponent;
 
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
-	// TObjectPtr<UEqZeroCameraComponent> CameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EqZero|Character", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UEqZeroCameraComponent> CameraComponent;
 
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_ReplicatedAcceleration)
 	FEqZeroReplicatedAcceleration ReplicatedAcceleration;
 
+	UPROPERTY(ReplicatedUsing = OnRep_MyTeamID)
+	FGenericTeamId MyTeamID;
+
+	UPROPERTY()
+	FOnEqZeroTeamIndexChangedDelegate OnTeamChangedDelegate;
+
 private:
 	UFUNCTION()
 	UE_API void OnRep_ReplicatedAcceleration();
+
+	UFUNCTION()
+	UE_API void OnRep_MyTeamID(FGenericTeamId OldTeamID);
 };
 
 #undef UE_API

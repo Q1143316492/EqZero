@@ -156,7 +156,10 @@ void AEqZeroPlayerController::BroadcastOnPlayerStateChanged()
 		if (IEqZeroTeamAgentInterface* PlayerStateTeamInterface = Cast<IEqZeroTeamAgentInterface>(LastSeenPlayerState))
 		{
 			OldTeamID = PlayerStateTeamInterface->GetGenericTeamId();
-			PlayerStateTeamInterface->GetTeamChangedDelegateChecked().RemoveAll(this);
+			if (FOnEqZeroTeamIndexChangedDelegate* Delegate = PlayerStateTeamInterface->GetOnTeamIndexChangedDelegate())
+			{
+				Delegate->RemoveAll(this);
+			}
 		}
 	}
 
@@ -167,11 +170,14 @@ void AEqZeroPlayerController::BroadcastOnPlayerStateChanged()
 		if (IEqZeroTeamAgentInterface* PlayerStateTeamInterface = Cast<IEqZeroTeamAgentInterface>(PlayerState))
 		{
 			NewTeamID = PlayerStateTeamInterface->GetGenericTeamId();
-			PlayerStateTeamInterface->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnPlayerStateChangedTeam);
+			if (FOnEqZeroTeamIndexChangedDelegate* Delegate = PlayerStateTeamInterface->GetOnTeamIndexChangedDelegate())
+			{
+				Delegate->AddDynamic(this, &ThisClass::OnPlayerStateChangedTeam);
+			}
 		}
 	}
 
-	ConditionalBroadcastTeamChanged(this, OldTeamID, NewTeamID);
+	IEqZeroTeamAgentInterface::ConditionalBroadcastTeamChanged(this, OldTeamID, NewTeamID);
 	LastSeenPlayerState = PlayerState;
 }
 
@@ -453,20 +459,12 @@ FGenericTeamId AEqZeroPlayerController::GetGenericTeamId() const
 	return FGenericTeamId::NoTeam;
 }
 
-FOnEqZeroTeamIndexChangedDelegate& AEqZeroPlayerController::GetTeamChangedDelegateChecked()
+FOnEqZeroTeamIndexChangedDelegate* AEqZeroPlayerController::GetOnTeamIndexChangedDelegate()
 {
-	return OnTeamChangedDelegate;
+	return &OnTeamChangedDelegate;
 }
 
-void AEqZeroPlayerController::OnPlayerStateChangedTeam(UObject* Producer, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID)
+void AEqZeroPlayerController::OnPlayerStateChangedTeam(UObject* Producer, int32 OldTeamID, int32 NewTeamID)
 {
-	ConditionalBroadcastTeamChanged(this, OldTeamID, NewTeamID);
-}
-
-void AEqZeroPlayerController::ConditionalBroadcastTeamChanged(TScriptInterface<IEqZeroTeamAgentInterface> This, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID)
-{
-	if (OldTeamID != NewTeamID)
-	{
-		OnTeamChangedDelegate.Broadcast(This.GetObject(), OldTeamID, NewTeamID);
-	}
+	IEqZeroTeamAgentInterface::ConditionalBroadcastTeamChanged(this, IntegerToGenericTeamId(OldTeamID), IntegerToGenericTeamId(NewTeamID));
 }

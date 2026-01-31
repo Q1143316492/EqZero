@@ -424,6 +424,26 @@ void AEqZeroCharacter::OnRep_ReplicatedAcceleration()
 	}
 }
 
+void AEqZeroCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	// TODO: Implement team assignment logic
+}
+
+FGenericTeamId AEqZeroCharacter::GetGenericTeamId() const
+{
+	return MyTeamID;
+}
+
+FOnEqZeroTeamIndexChangedDelegate* AEqZeroCharacter::GetOnTeamIndexChangedDelegate()
+{
+	return &OnTeamChangedDelegate;
+}
+
+void AEqZeroCharacter::OnRep_MyTeamID(FGenericTeamId OldTeamID)
+{
+	// TODO: Implement team replication response
+}
+
 bool AEqZeroCharacter::UpdateSharedReplication()
 {
 	if (GetLocalRole() == ROLE_Authority)
