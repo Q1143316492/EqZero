@@ -3,6 +3,9 @@ import * as UE from 'ue';
 import { blueprint, argv } from 'puerts';
 import { GameService } from './Logic/GameService';
 
+// UI Mixin imports - 加载UI蓝图混入
+import './Logic/Client/UI/EqFrontEndMixin';
+
 function DebugLog(msg: string) {
     console.warn(`[TS Main] ${msg}`);
 }

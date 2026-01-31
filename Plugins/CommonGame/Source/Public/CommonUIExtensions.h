@@ -27,7 +27,10 @@ class UCommonUIExtensions : public UBlueprintFunctionLibrary
 	
 public:
 	UCommonUIExtensions() { }
-	
+
+	/*
+	 * UCommonInputSubsystem
+	 */
 	UFUNCTION(BlueprintPure, BlueprintCosmetic, Category = "Global UI Extensions", meta = (WorldContext = "WidgetContextObject"))
 	static UE_API ECommonInputType GetOwningPlayerInputType(const UUserWidget* WidgetContextObject);
 	
@@ -37,6 +40,9 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintCosmetic, Category = "Global UI Extensions", meta = (WorldContext = "WidgetContextObject"))
 	static UE_API bool IsOwningPlayerUsingGamepad(const UUserWidget* WidgetContextObject);
 
+	/*
+	 * UGameUIManagerSubsystem->UGameUIPolicy->UPrimaryGameLayout
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions")
 	static UE_API UCommonActivatableWidget* PushContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, UPARAM(meta = (Categories = "UI.Layer")) FGameplayTag LayerName, UPARAM(meta = (AllowAbstract = false)) TSubclassOf<UCommonActivatableWidget> WidgetClass);
 
@@ -46,9 +52,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions")
 	static UE_API void PopContentFromLayer(UCommonActivatableWidget* ActivatableWidget);
 
+	/*
+	* Getter
+	* */
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions")
 	static UE_API ULocalPlayer* GetLocalPlayerFromController(APlayerController* PlayerController);
 
+	/*
+	 * 输入屏蔽和恢复
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions")
 	static UE_API FName SuspendInputForPlayer(APlayerController* PlayerController, FName SuspendReason);
 
