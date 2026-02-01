@@ -2,16 +2,22 @@
 
 #pragma once
 
-#include "Engine/DeveloperSettings.h"
-
+#include "Engine/DeveloperSettingsBackedByCVars.h"
+#include "UObject/PrimaryAssetId.h"
+#include "UObject/SoftObjectPath.h"
 #include "EqZeroDeveloperSettings.generated.h"
+
+struct FPropertyChangedEvent;
 
 class UEqZeroExperienceDefinition;
 
 UENUM()
 enum class EEqZeroCheatExecutionTime
 {
+	// When the cheat manager is created
 	OnCheatManagerCreated,
+
+	// When a pawn is possessed by a player
 	OnPlayerPawnPossession
 };
 
@@ -21,51 +27,85 @@ struct FEqZeroCheatToRun
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	EEqZeroCheatExecutionTime Phase = EEqZeroCheatExecutionTime::OnCheatManagerCreated;
+	EEqZeroCheatExecutionTime Phase = EEqZeroCheatExecutionTime::OnPlayerPawnPossession;
 
 	UPROPERTY(EditAnywhere)
 	FString Cheat;
 };
 
 /**
- * Developer settings for this project
+ * Developer settings / editor cheats
  */
-UCLASS(Config=Game, defaultconfig, meta=(DisplayName="EqZero Developer Settings"))
-class UEqZeroDeveloperSettings : public UDeveloperSettings
+UCLASS(config=EditorPerProjectUserSettings, MinimalAPI)
+class UEqZeroDeveloperSettings : public UDeveloperSettingsBackedByCVars
 {
 	GENERATED_BODY()
 
 public:
+	UEqZeroDeveloperSettings();
 
-	EQZEROGAME_API UEqZeroDeveloperSettings();
-
-	EQZEROGAME_API static const UEqZeroDeveloperSettings* Get();
-
-	// Checks if the asset is in the loaded assets list, if so it will be loaded.
-	//UFUNCTION(BlueprintCallable, Category = "EqZero|DeveloperSettings")
-	//bool IsAssetLoaded(const FPrimaryAssetId& AssetId) const;
+	//~UDeveloperSettings interface
+	virtual FName GetCategoryName() const override;
+	//~End of UDeveloperSettings interface
 
 public:
-	// The experience override to use for Play in Editor (initial map load)
-	UPROPERTY(EditAnywhere, config, Category=Lyra, meta=(AllowedTypes="LyraExperienceDefinition"))
+	// The experience override to use for Play in Editor (if not set, the default for the world settings of the open map will be used)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZero, meta=(AllowedTypes="EqZeroExperienceDefinition"))
 	FPrimaryAssetId ExperienceOverride;
 
-	UPROPERTY(EditAnywhere, config, Category=Lyra)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZeroBots, meta=(InlineEditConditionToggle))
 	bool bOverrideBotCount = false;
 
-	UPROPERTY(EditAnywhere, config, Category=Lyra, meta=(EditCondition=bOverrideBotCount))
-	int32 OverrideNumPlayerBots = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZeroBots, meta=(EditCondition=bOverrideBotCount))
+	int32 OverrideNumPlayerBotsToSpawn = 0;
 
-	UPROPERTY(EditAnywhere, config, Category=Lyra)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZeroBots)
 	bool bAllowPlayerBotsToAttack = true;
 
-	// Cheats to run when the game starts
-	UPROPERTY(EditAnywhere, config, Category=Lyra)
-	TArray<FEqZeroCheatToRun> CheatsToRun;
-	
-	// List of assets to load when the game starts (in editor)
-	//UPROPERTY(EditAnywhere, config, Category=Lyra)
-	//TArray<FSoftObjectPath> AssetsToLoad;
-};
+	// Do the full game flow when playing in the editor, or skip 'waiting for player' / etc... game phases?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZero)
+	bool bTestFullGameFlowInPIE = false;
 
-#undef UE_API
+	/**
+	* Should force feedback effects be played, even if the last input device was not a gamepad?
+	* The default behavior in EqZero is to only play force feedback if the most recent input device was a gamepad.
+	*/
+	UPROPERTY(config, EditAnywhere, Category = EqZero, meta = (ConsoleVariable = "EqZeroPC.ShouldAlwaysPlayForceFeedback"))
+	bool bShouldAlwaysPlayForceFeedback = false;
+
+	// Should game logic load cosmetic backgrounds in the editor or skip them for iteration speed?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZero)
+	bool bSkipLoadingCosmeticBackgroundsInPIE = false;
+
+	// List of cheats to auto-run during 'play in editor'
+	UPROPERTY(config, EditAnywhere, Category=EqZero)
+	TArray<FEqZeroCheatToRun> CheatsToRun;
+
+	// Should messages broadcast through the gameplay message subsystem be logged?
+	UPROPERTY(config, EditAnywhere, Category=GameplayMessages, meta=(ConsoleVariable="GameplayMessageSubsystem.LogMessages"))
+	bool LogGameplayMessages = false;
+
+#if WITH_EDITORONLY_DATA
+	/** A list of common maps that will be accessible via the editor detoolbar */
+	UPROPERTY(config, EditAnywhere, BlueprintReadOnly, Category=Maps, meta=(AllowedClasses="/Script/Engine.World"))
+	TArray<FSoftObjectPath> CommonEditorMaps;
+#endif
+
+#if WITH_EDITOR
+public:
+	// Called by the editor engine to let us pop reminder notifications when cheats are active
+	EQZEROGAME_API void OnPlayInEditorStarted() const;
+
+private:
+	void ApplySettings();
+#endif
+
+public:
+	//~UObject interface
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PostReloadConfig(FProperty* PropertyThatWasLoaded) override;
+	virtual void PostInitProperties() override;
+#endif
+	//~End of UObject interface
+};

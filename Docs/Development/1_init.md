@@ -91,38 +91,7 @@ UEqZeroExperienceDefinition
 
 把很多关联类搞了出来，做一个分类是玩家，系统，UI
 
-- AEqZeroCharacter
-
-	- AEqZeroCharacter
-
-	- UEqZeroHealthComponent
-
-	- UEqZeroHeroComponent
-
-	- UEqZeroPawnExtensionComponent
-
-- AEqZeroPlayerController
-
-- AEqZeroPlayerState
-
-- UEqZeroLocalPlayer
-
-
-动画，摄像机，技能先放一放
-
-===
-
-系统
-
-- AEqZeroGameMode
-
-- AEqZeroGameState
-
-	- UEqZeroExperienceManagerComponent
-
-===
-
-UI，设置归一类，剩下的非重要模块，比如队伍。
+Xmind 架构图，角色类，gameplay 相关类
 
 然后能过编译
 
@@ -156,3 +125,5 @@ Common UI Editor （例如配置一些字体样式）
 loading screen 
 
 # 7_应该开始游戏场景了吧
+
+从体验，pawn data 角色蓝图开始做
