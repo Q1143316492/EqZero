@@ -1,5 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-// TODO Hero Comp
 
 #include "GameFeatureAction_AddInputBinding.h"
 #include "Components/GameFrameworkComponentManager.h"
@@ -125,29 +124,28 @@ void UGameFeatureAction_AddInputBinding::AddInputMappingForPlayer(APawn* Pawn, F
 {
 	APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
 
-	// TODO Hero Comp
-	// if (ULocalPlayer* LocalPlayer = PlayerController ? PlayerController->GetLocalPlayer() : nullptr)
-	// {
-	// 	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-	// 	{
-	// 		UEqZeroHeroComponent* HeroComponent = Pawn->FindComponentByClass<UEqZeroHeroComponent>();
-	// 		if (HeroComponent && HeroComponent->IsReadyToBindInputs())
-	// 		{
-	// 			for (const TSoftObjectPtr<const UEqZeroInputConfig>& Entry : InputConfigs)
-	// 			{
-	// 				if (const UEqZeroInputConfig* BindSet = Entry.Get())
-	// 				{
-	// 					HeroComponent->AddAdditionalInputConfig(BindSet);
-	// 				}
-	// 			}
-	// 		}
-	// 		ActiveData.PawnsAddedTo.AddUnique(Pawn);
-	// 	}
-	// 	else
-	// 	{
-	// 		UE_LOG(LogGameFeatures, Error, TEXT("Failed to find `UEnhancedInputLocalPlayerSubsystem` for local player. Input mappings will not be added. Make sure you're set to use the EnhancedInput system via config file."));
-	// 	}
-	// }
+	if (ULocalPlayer* LocalPlayer = PlayerController ? PlayerController->GetLocalPlayer() : nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			UEqZeroHeroComponent* HeroComponent = Pawn->FindComponentByClass<UEqZeroHeroComponent>();
+			if (HeroComponent && HeroComponent->IsReadyToBindInputs())
+			{
+				for (const TSoftObjectPtr<const UEqZeroInputConfig>& Entry : InputConfigs)
+				{
+					if (const UEqZeroInputConfig* BindSet = Entry.Get())
+					{
+						HeroComponent->AddAdditionalInputConfig(BindSet);
+					}
+				}
+			}
+			ActiveData.PawnsAddedTo.AddUnique(Pawn);
+		}
+		else
+		{
+			UE_LOG(LogGameFeatures, Error, TEXT("Failed to find `UEnhancedInputLocalPlayerSubsystem` for local player. Input mappings will not be added. Make sure you're set to use the EnhancedInput system via config file."));
+		}
+	}
 }
 
 void UGameFeatureAction_AddInputBinding::RemoveInputMapping(APawn* Pawn, FPerContextData& ActiveData)
@@ -158,17 +156,16 @@ void UGameFeatureAction_AddInputBinding::RemoveInputMapping(APawn* Pawn, FPerCon
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 		{
-			// TODO Hero Comp
-			// if (UEqZeroHeroComponent* HeroComponent = Pawn->FindComponentByClass<UEqZeroHeroComponent>())
-			// {
-			// 	for (const TSoftObjectPtr<const UEqZeroInputConfig>& Entry : InputConfigs)
-			// 	{
-			// 		if (const UEqZeroInputConfig* InputConfig = Entry.Get())
-			// 		{
-			// 			HeroComponent->RemoveAdditionalInputConfig(InputConfig);
-			// 		}
-			// 	}
-			// }
+			if (UEqZeroHeroComponent* HeroComponent = Pawn->FindComponentByClass<UEqZeroHeroComponent>())
+			{
+				for (const TSoftObjectPtr<const UEqZeroInputConfig>& Entry : InputConfigs)
+				{
+					if (const UEqZeroInputConfig* InputConfig = Entry.Get())
+					{
+						HeroComponent->RemoveAdditionalInputConfig(InputConfig);
+					}
+				}
+			}
 		}
 	}
 

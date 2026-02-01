@@ -1,5 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-// TODO HERO COMP
 
 #include "GameFeatureAction_AddInputContextMapping.h"
 #include "Components/GameFrameworkComponentManager.h"
@@ -10,7 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFeatures/GameFeatureAction_WorldActionBase.h"
 #include "InputMappingContext.h"
-// #include "Character/EqZeroHeroComponent.h"
+#include "Character/EqZeroHeroComponent.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "System/EqZeroAssetManager.h"
 
@@ -238,11 +237,10 @@ void UGameFeatureAction_AddInputContextMapping::HandleControllerExtension(AActor
 	{
 		RemoveInputMapping(AsController, ActiveData);
 	}
-	// todo HERO COMP
-	// else if ((EventName == UGameFrameworkComponentManager::NAME_ExtensionAdded) || (EventName == UEqZeroHeroComponent::NAME_BindInputsNow))
-	// {
-	// 	AddInputMappingForPlayer(AsController->GetLocalPlayer(), ActiveData);
-	// }
+	else if ((EventName == UGameFrameworkComponentManager::NAME_ExtensionAdded) || (EventName == UEqZeroHeroComponent::NAME_BindInputsNow))
+	{
+		AddInputMappingForPlayer(AsController->GetLocalPlayer(), ActiveData);
+	}
 }
 
 void UGameFeatureAction_AddInputContextMapping::AddInputMappingForPlayer(UPlayer* Player, FPerContextData& ActiveData)

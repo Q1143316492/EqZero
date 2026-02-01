@@ -58,7 +58,14 @@ AEqZeroCharacter::AEqZeroCharacter(const FObjectInitializer& ObjectInitializer)
 	EqZeroMoveComp->GroundFriction = 8.0f;
 	EqZeroMoveComp->BrakingDecelerationWalking = 1400.0f;
 	EqZeroMoveComp->bUseControllerDesiredRotation = false;
+
+	/**
+	 * 旋转朝向运动
+	 * 让角色的旋转朝向其加速度（移动）的方向。
+	 * True：如果这一帧向左移动，角色会自动转向左边。
+	 */
 	EqZeroMoveComp->bOrientRotationToMovement = false;
+
 	EqZeroMoveComp->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 	EqZeroMoveComp->bAllowPhysicsRotationDuringAnimRootMotion = false;
 	EqZeroMoveComp->GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -78,7 +85,18 @@ AEqZeroCharacter::AEqZeroCharacter(const FObjectInitializer& ObjectInitializer)
 	// CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 
 	bUseControllerRotationPitch = false;
+
+	/**
+	 * 强制角色的胶囊体（Capsule）始终跟随控制器的 Yaw（水平旋转）方向。
+	 * 
+	 * True：类似射击游戏（Shooter）或瞄准模式。当你移动鼠标旋转视角时，角色身体也会跟着转。
+	 * 如果你向后跑（S键），角色会倒着走（Face Forward, Move Backward）。
+	 * 
+	 * False：类似冒险游戏（Adventure）。角色身体的朝向与视角方向解耦。
+	 * 这允许角色面朝任意方向（例如面朝屏幕跑回来）。
+	 */
 	bUseControllerRotationYaw = true;
+	
 	bUseControllerRotationRoll = false;
 
 	BaseEyeHeight = 80.0f;

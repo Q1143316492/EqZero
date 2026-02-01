@@ -125,8 +125,6 @@ void UEqZeroPawnExtensionComponent::InitializeAbilitySystem(UEqZeroAbilitySystem
 	UE_LOG(LogEqZero, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
 	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
 	{
-		UE_LOG(LogEqZero, Log, TEXT("Existing avatar (authority=%d)"), ExistingAvatar->HasAuthority() ? 1 : 0);
-
 		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
 		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
 		ensure(!ExistingAvatar->HasAuthority());
@@ -211,7 +209,6 @@ void UEqZeroPawnExtensionComponent::SetupPlayerInputComponent()
 
 void UEqZeroPawnExtensionComponent::CheckDefaultInitialization()
 {
-	// Before checking our progress, try progressing any other features we might depend on
 	CheckDefaultInitializationForImplementers();
 
 	static const TArray<FGameplayTag> StateChain = {
@@ -220,7 +217,6 @@ void UEqZeroPawnExtensionComponent::CheckDefaultInitialization()
 		EqZeroGameplayTags::InitState_DataInitialized,
 		EqZeroGameplayTags::InitState_GameplayReady };
 
-	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
 	ContinueInitStateChain(StateChain);
 }
 
@@ -262,7 +258,8 @@ bool UEqZeroPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMa
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataAvailable && DesiredState == EqZeroGameplayTags::InitState_DataInitialized)
 	{
 		// Transition to initialize if all features have their data available
-		return Manager->HaveAllFeaturesReachedInitState(Pawn, EqZeroGameplayTags::InitState_DataAvailable);
+		bool Result = Manager->HaveAllFeaturesReachedInitState(Pawn, EqZeroGameplayTags::InitState_DataAvailable);
+		return Result;
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataInitialized && DesiredState == EqZeroGameplayTags::InitState_GameplayReady)
 	{

@@ -16,6 +16,7 @@
 #include "GameModes/EqZeroGameMode.h"
 #include "EqZeroLogChannels.h"
 #include "EqZeroPlayerController.h"
+#include "Character/EqZeroPawnExtensionComponent.h"
 #include "Messages/EqZeroVerbMessage.h"
 #include "Net/UnrealNetwork.h"
 
@@ -55,11 +56,10 @@ void AEqZeroPlayerState::ClientInitialize(AController* C)
 {
 	Super::ClientInitialize(C);
 
-	// TODO: Implement when pawn extension component is ported
-	// if (UEqZeroPawnExtensionComponent* PawnExtComp = UEqZeroPawnExtensionComponent::FindPawnExtensionComponent(GetPawn()))
-	// {
-	//     PawnExtComp->CheckDefaultInitialization();
-	// }
+	if (UEqZeroPawnExtensionComponent* PawnExtComp = UEqZeroPawnExtensionComponent::FindPawnExtensionComponent(GetPawn()))
+	{
+	    PawnExtComp->CheckDefaultInitialization();
+	}
 }
 
 void AEqZeroPlayerState::CopyProperties(APlayerState* PlayerState)

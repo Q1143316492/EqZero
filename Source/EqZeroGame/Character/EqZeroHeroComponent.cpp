@@ -14,7 +14,7 @@
 #include "AbilitySystem/EqZeroAbilitySystemComponent.h"
 #include "Input/EqZeroInputConfig.h"
 #include "Input/EqZeroInputComponent.h"
-// #include "Camera/EqZeroCameraComponent.h" // TODO: Implement this class
+#include "Camera/EqZeroCameraComponent.h"
 #include "EqZeroGameplayTags.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "PlayerMappableInputConfig.h"
@@ -122,7 +122,7 @@ bool UEqZeroHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Ma
 				return false;
 			}
 		}
-
+		
 		return true;
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataAvailable && DesiredState == EqZeroGameplayTags::InitState_DataInitialized)
@@ -171,16 +171,13 @@ void UEqZeroHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager*
 			}
 		}
 
-		// Hook up the delegate for all pawns, in case we spectate later
+		// 为所有 pawns 连接委托，以防我们之后进行观察
 		if (PawnData)
 		{
-            // TODO: EqZeroCameraComponent missing
-			/*
 			if (UEqZeroCameraComponent* CameraComponent = UEqZeroCameraComponent::FindCameraComponent(Pawn))
 			{
-				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+				// CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
 			}
-            */
 		}
 	}
 }
@@ -189,7 +186,8 @@ void UEqZeroHeroComponent::OnActorInitStateChanged(const FActorInitStateChangedP
 {
 	if (Params.FeatureName == UEqZeroPawnExtensionComponent::NAME_ActorFeatureName)
 	{
-		if (Params.FeatureState == EqZeroGameplayTags::InitState_DataInitialized)
+		// TODO 第二个条件是和Lyra不同的地方
+		if (Params.FeatureState == EqZeroGameplayTags::InitState_DataInitialized || Params.FeatureState == EqZeroGameplayTags::InitState_DataAvailable)
 		{
 			// If the extension component says all all other components are initialized, try to progress to next state
 			CheckDefaultInitialization();
@@ -199,9 +197,12 @@ void UEqZeroHeroComponent::OnActorInitStateChanged(const FActorInitStateChangedP
 
 void UEqZeroHeroComponent::CheckDefaultInitialization()
 {
-	static const TArray<FGameplayTag> StateChain = { EqZeroGameplayTags::InitState_Spawned, EqZeroGameplayTags::InitState_DataAvailable, EqZeroGameplayTags::InitState_DataInitialized, EqZeroGameplayTags::InitState_GameplayReady };
+	static const TArray<FGameplayTag> StateChain = {
+		EqZeroGameplayTags::InitState_Spawned,
+		EqZeroGameplayTags::InitState_DataAvailable,
+		EqZeroGameplayTags::InitState_DataInitialized,
+		EqZeroGameplayTags::InitState_GameplayReady };
 
-	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
 	ContinueInitStateChain(StateChain);
 }
 
@@ -401,6 +402,11 @@ void UEqZeroHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 void UEqZeroHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 {
+	/**
+	 * 如果是 SpringArmComponent
+	 * 记得使用 Use Pawn Control Rotation = True
+	 */
+
 	APawn* Pawn = GetPawn<APawn>();
 
 	if (!Pawn)

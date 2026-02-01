@@ -24,6 +24,7 @@
 #include "CommonUserSubsystem.h"
 #include "CommonSessionSubsystem.h"
 #include "GameMapsSettings.h"
+#include "Character/EqZeroPawnExtensionComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
 
@@ -368,14 +369,13 @@ APawn* AEqZeroGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* 
 	{
 		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
 		{
-			// TODO: 迁移 UEqZeroPawnExtensionComponent 后，使用 SetPawnData 设置 PawnData
-			// if (UEqZeroPawnExtensionComponent* PawnExtComp = UEqZeroPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
-			// {
-			//     if (const UEqZeroPawnData* PawnData = GetPawnDataForController(NewPlayer))
-			//     {
-			//         PawnExtComp->SetPawnData(PawnData);
-			//     }
-			// }
+			if (UEqZeroPawnExtensionComponent* PawnExtComp = UEqZeroPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
+			{
+			    if (const UEqZeroPawnData* PawnData = GetPawnDataForController(NewPlayer))
+			    {
+			        PawnExtComp->SetPawnData(PawnData);
+			    }
+			}
 
 			SpawnedPawn->FinishSpawning(SpawnTransform);
 
