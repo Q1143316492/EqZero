@@ -54,6 +54,11 @@ if (TargetUClass) {
                 self.GameService = undefined;
             }
         }
+
+        OnNativeInputAction(InputTag: UE.GameplayTag, InputActionValue: UE.InputActionValue): void {
+            const self = this as unknown as EqGameInstance;
+            // DebugLog(`OnNativeInputAction (Name:${self.GetName()}, Tag:${InputTag.TagName})`);
+        }
     }
     
     // Apply the mixin to the Blueprint class

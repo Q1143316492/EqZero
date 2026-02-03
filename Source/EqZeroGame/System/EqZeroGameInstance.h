@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CommonGameInstance.h"
-
+#include "InputActionValue.h"
 #include "EqZeroGameInstance.generated.h"
 
 namespace puerts { class FJsEnv; }
@@ -31,6 +31,8 @@ public:
 	// 客户端 收到服务器确认后，设置客户端的加密密钥
 	EQZEROGAME_API virtual void ReceivedNetworkEncryptionAck(const FOnEncryptionKeyResponse& Delegate) override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "EqZero|Hero")
+	EQZEROGAME_API void OnNativeInputAction(FGameplayTag InputTag, const FInputActionValue& InputActionValue);
 protected:
 
 	EQZEROGAME_API virtual void Init() override;
