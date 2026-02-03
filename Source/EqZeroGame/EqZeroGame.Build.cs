@@ -78,7 +78,7 @@ public class EqZeroGame : ModuleRules
 				"AudioModulation",
 				"EngineSettings",
 				"DTLSHandlerComponent",
-				"Json",
+				"Json", "AnimGraphRuntime",
 			}
 		);
 
