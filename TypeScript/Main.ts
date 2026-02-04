@@ -2,6 +2,7 @@
 import * as UE from 'ue';
 import { blueprint, argv } from 'puerts';
 import { GameService } from './Logic/GameService';
+import { InitializeTSCheats } from './Logic/Client/Command/Cheat';
 
 // UI Mixin imports - 加载UI蓝图混入
 import './Logic/Client/UI/EqFrontEndMixin';
@@ -87,6 +88,11 @@ if (TargetUClass) {
     } catch (e) {
         DebugLog(`[Init] Error: ${e}`);
     }
+
+    // =========================================================
+    // 4. 初始化开发工具 (Development Only)
+    // =========================================================
+    InitializeTSCheats();
 
 } else {
     console.error(`ERROR: Failed to load Blueprint Class: ${BP_Path}`);
