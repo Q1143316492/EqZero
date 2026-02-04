@@ -146,7 +146,28 @@ void UEqZeroGameInstance::Init()
 	}
 
 	// 初始化 TypeScript/JavaScript 环境 (Puerts)
+	// TSDebugPort > 0 时启用调试，Chrome浏览器打开: chrome://inspect
+#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
+	if (TSDebugPort > 0)
+	{
+		// 启用调试模式：创建带调试端口的JsEnv
+		GameScript = MakeShared<puerts::FJsEnv>(
+			std::make_unique<puerts::DefaultJSModuleLoader>(TEXT("JavaScript")),
+			std::make_shared<puerts::FDefaultLogger>(),
+			TSDebugPort
+		);
+		GameScript->WaitDebugger(); // 暂停等待调试器连接
+		UE_LOG(LogTemp, Warning, TEXT("[Puerts] Debug mode enabled on port %d, waiting for debugger..."), TSDebugPort);
+	}
+	else
+	{
+		// 不启用调试
+		GameScript = MakeShared<puerts::FJsEnv>();
+	}
+#else
+	// 发布模式：总是不启用调试
 	GameScript = MakeShared<puerts::FJsEnv>();
+#endif
 
 	TArray<TPair<FString, UObject*>> Arguments;
 	Arguments.Add(TPair<FString, UObject*>("GameInstance", this));

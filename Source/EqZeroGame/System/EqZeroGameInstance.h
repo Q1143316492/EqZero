@@ -33,7 +33,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "EqZero|Hero")
 	EQZEROGAME_API void OnNativeInputAction(FGameplayTag InputTag, const FInputActionValue& InputActionValue);
+
 protected:
+
+	/** TypeScript调试端口，0表示不启用调试 (只在Debug/Development版本生效) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TypeScript Debug", meta = (ClampMin = "0", ClampMax = "65535"))
+	int32 TSDebugPort = 0;
 
 	EQZEROGAME_API virtual void Init() override;
 	EQZEROGAME_API virtual void Shutdown() override;

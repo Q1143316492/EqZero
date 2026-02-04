@@ -29,6 +29,11 @@ public:
 	virtual void NativeDestruct() override;
 	//~End of UUserWidget interface
 
+	UFUNCTION(BlueprintImplementableEvent, Category = TaggedWidget, meta = (DisplayName = "On Activated"))
+	void BP_OnActivated();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = TaggedWidget, meta = (DisplayName = "On Deactivated"))
+	void BP_OnDeactivated();
 protected:
 	/** If the owning player has any of these tags, this widget will be hidden (using HiddenVisibility) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")

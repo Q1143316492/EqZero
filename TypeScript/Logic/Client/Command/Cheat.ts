@@ -1,15 +1,15 @@
 import * as UE from 'ue';
 import { blueprint } from 'puerts';
 
-function DebugLog(msg: string) {
-    console.warn(`[TS Cheat] ${msg}`);
-}
+// =========================================================
+// TypeScript Cheats Mixin - 模块加载时自动执行（仅执行一次）
+// 使用 IIFE 避免污染模块作用域
+// =========================================================
+(function initializeTSCheats() {
+    function DebugLog(msg: string) {
+        console.warn(`[TS Cheat] ${msg}`);
+    }
 
-/**
- * 初始化 TypeScript Cheats Mixin
- * 将 TypeScript 实现混入到蓝图 CheatManager 扩展中
- */
-export function InitializeTSCheats(): void {
     const TSCheats_BP_Path = '/Game/Development/B_EqTSCheats.B_EqTSCheats_C';
     const TSCheatsUClass = UE.Class.Load(TSCheats_BP_Path);
 
@@ -44,4 +44,4 @@ export function InitializeTSCheats(): void {
     } else {
         DebugLog(`Warning: Failed to load Blueprint Class: ${TSCheats_BP_Path}`);
     }
-}
+})();
