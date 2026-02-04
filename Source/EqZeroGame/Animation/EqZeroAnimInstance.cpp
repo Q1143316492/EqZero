@@ -11,6 +11,9 @@
 #include "Misc/DataValidation.h"
 #endif
 
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "UI/Debug/EqZeroAnimDebugWidget.h"
+#include "EqZeroGameplayTags.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroAnimInstance)
 
 
@@ -94,8 +97,34 @@ void UEqZeroAnimInstance::UpdateData(float DeltaSeconds)
 	UpdateRootYawOffset(DeltaSeconds);
 	UpdateAimingData();
 	UpdateJumpFallData();
+	
+#if WITH_EDITOR
+	UpdateDebugData();
+#endif
 
 	IsFirstUpdate = false;
+}
+
+void UEqZeroAnimInstance::UpdateDebugData()
+{
+	if (!bEnableDebugInfo)
+	{
+		return;
+	}
+
+	FEqZeroAnimDebugMessage DebugMessage;
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("Velocity: %.2f"), WorldVelocity.Size()));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisplacementSpeed: %.2f"), DisplacementSpeed));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("YawDeltaSpeed: %.2f"), YawDeltaSpeed));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("RootYawOffset: %.2f"), RootYawOffset));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsCrouching: %s"), IsCrouching ? TEXT("True") : TEXT("False")));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsOnGround: %s"), IsOnGround ? TEXT("True") : TEXT("False")));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsJumping: %s"), IsJumping ? TEXT("True") : TEXT("False")));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsFalling: %s"), IsFalling ? TEXT("True") : TEXT("False")));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("Directon: %d"), (uint8)LocalVelocityDirection));
+
+	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
+	MessageSubsystem.BroadcastMessage(EqZeroGameplayTags::EqZero_Anim_Debug, DebugMessage);
 }
 
 void UEqZeroAnimInstance::UpdateLocationData(float DeltaSeconds)

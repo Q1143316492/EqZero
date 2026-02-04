@@ -85,7 +85,11 @@ protected:
 	float AdditiveLeanAngle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rotation Data")
-	float YawDeltaSpeed;
+	float YawDeltaSpeed; // deg/s
+
+	// Debug
+	void UpdateDebugData();
+	bool bEnableDebugInfo = true;
 
 	// Location Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Location Data")
