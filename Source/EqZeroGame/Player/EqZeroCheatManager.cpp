@@ -18,6 +18,8 @@
 #include "Character/EqZeroPawnExtensionComponent.h"
 #include "System/EqZeroSystemStatics.h"
 #include "Development/EqZeroDeveloperSettings.h"
+#include "Animation/AnimSequence.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroCheatManager)
 
@@ -99,6 +101,40 @@ void UEqZeroCheatManager::CheatAll(const FString& Msg)
 	if (AEqZeroPlayerController* EqZeroPC = Cast<AEqZeroPlayerController>(GetOuterAPlayerController()))
 	{
 		EqZeroPC->ServerCheatAll(Msg.Left(128));
+	}
+}
+
+void UEqZeroCheatManager::FindAnimationsWithCurve(const FString& CurveName)
+{
+	FName TargetCurveName(*CurveName);
+	TArray<FString> FoundAssets;
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	TArray<FAssetData> AssetDataList;
+	FARFilter Filter;
+	Filter.ClassPaths.Add(UAnimSequence::StaticClass()->GetClassPathName());
+	Filter.bRecursivePaths = true;
+	AssetRegistryModule.Get().GetAssets(Filter, AssetDataList);
+
+	CheatOutputText(FString::Printf(TEXT("Searching for curve '%s' in %d AnimSequences..."), *CurveName, AssetDataList.Num()));
+
+	for (const FAssetData& AssetData : AssetDataList)
+	{
+		UAnimSequence* AnimSeq = Cast<UAnimSequence>(AssetData.GetAsset());
+		if (AnimSeq && AnimSeq->HasCurveData(TargetCurveName, false))
+		{
+			FoundAssets.Add(AssetData.GetSoftObjectPath().ToString());
+			CheatOutputText(FString::Printf(TEXT("Found in: %s"), *AssetData.GetSoftObjectPath().ToString()));
+		}
+	}
+
+	if (FoundAssets.Num() == 0)
+	{
+		CheatOutputText(FString::Printf(TEXT("Curve '%s' not found in any animation."), *CurveName));
+	}
+	else
+	{
+		CheatOutputText(FString::Printf(TEXT("Curve '%s' found in %d animations."), *CurveName, FoundAssets.Num()));
 	}
 }
 

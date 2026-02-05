@@ -42,6 +42,9 @@ public:
 	UFUNCTION(exec)
 	void CheatAll(const FString& Msg);
 
+	UFUNCTION(Exec)
+	void FindAnimationsWithCurve(const FString& CurveName);
+
 	/*
 	 * 玩法指令 
 	 */

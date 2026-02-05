@@ -17,26 +17,10 @@ void UEqZeroItemAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-    // 链接动画层改变会重新初始化的，缓存没关系
-	// if (AActor* OwningActor = GetOwningActor())
-	// {
- //        // 获取拥有这个动画实例的网格组件
-	// 	if (USkeletalMeshComponent* SkeletalMeshComponent = GetOwningComponent())
-	// 	{
-	// 		// 如果组件的主动画实例 != 我自己 (this)。这个接口返回的是那个“主”实例。
-	// 		if (SkeletalMeshComponent->GetAnimInstance() != this)
-	// 		{
-	// 			// 说明我是被“链接”进来的子实例。这个接口返回的是那个“主”实例。
-	// 			MainAnim = Cast<UEqZeroAnimInstance>(SkeletalMeshComponent->GetAnimInstance());
-	// 		}
-	// 		else
-	// 		{
-	// 			// 只有当这个 ItemAnimInstance 被直接作为主动画蓝图设置在某个 Mesh 上时（而不是链接进去时）
-	// 			// 不应该这么用
- //                UE_LOG(LogEqZero, Warning, TEXT("UEqZeroItemAnimInstance on [%s] is the main AnimInstance. This is not the intended use case."), *GetNameSafe(OwningActor));
-	// 		}
-	// 	}
-	// }
+    if(auto MeshComp = GetOwningComponent())
+    {
+	    MainAnim = Cast<UEqZeroAnimInstance>(MeshComp->GetAnimInstance());
+    }
 }
 
 void UEqZeroItemAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -65,9 +49,11 @@ void UEqZeroItemAnimInstance::UpdateData(float DeltaSeconds)
 
 void UEqZeroItemAnimInstance::UpdateBlendWeightData(float DeltaSeconds)
 {
+	//  RaiseWeaponAfterFiringWhenCrouched 是默认False的配置
 	bool bCondition1 = !RaiseWeaponAfterFiringWhenCrouched && MainAnim->IsCrouching;
 	bool bCondition2 = !MainAnim->IsCrouching && MainAnim->GameplayTag_IsADS && MainAnim->IsOnGround;
 
+	// 蹲伏状态 || 非蹲伏状态下在地面瞄准
 	if (bCondition1 || bCondition2)
 	{
 		HipFireUpperBodyOverrideWeight = 0.0f;
@@ -77,6 +63,8 @@ void UEqZeroItemAnimInstance::UpdateBlendWeightData(float DeltaSeconds)
     
     bCondition1 = MainAnim->TimeSinceFiredWeapon < RaiseWeaponAfterFiringDuration;
     bCondition2 = MainAnim->GameplayTag_IsADS && (MainAnim->IsCrouching || !MainAnim->IsOnGround);
+
+	// 0.5s 内刚刚开火 || 瞄准且蹲伏或不在地面 || 动画资产强制应用瞄准姿势覆盖
     if (bCondition1 || bCondition2 || GetCurveValue(TEXT("applyHipfireOverridePose")) > 0.f)
     {
         HipFireUpperBodyOverrideWeight = 1.0f;
@@ -84,6 +72,7 @@ void UEqZeroItemAnimInstance::UpdateBlendWeightData(float DeltaSeconds)
     }
     else
     {
+    	// 否则平滑地插值回0
         HipFireUpperBodyOverrideWeight = FMath::FInterpTo(HipFireUpperBodyOverrideWeight, 0.0f, DeltaSeconds, 1.0f);
 
     	// 静止或存在根偏航偏移时使用瞄准偏移, 正常运动时使用放松瞄准偏移

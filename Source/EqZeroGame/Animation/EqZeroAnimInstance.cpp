@@ -112,16 +112,16 @@ void UEqZeroAnimInstance::UpdateDebugData()
 		return;
 	}
 
+	// 只在游戏运行时发送调试消息，避免在编辑器预览时崩溃
+	UWorld* World = GetWorld();
+	if (!World || !World->IsGameWorld())
+	{
+		return;
+	}
+
 	FEqZeroAnimDebugMessage DebugMessage;
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("Velocity: %.2f"), WorldVelocity.Size()));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisplacementSpeed: %.2f"), DisplacementSpeed));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("YawDeltaSpeed: %.2f"), YawDeltaSpeed));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("TurnYawCurveValue: %.2f"), TurnYawCurveValue));
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("RootYawOffset: %.2f"), RootYawOffset));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsCrouching: %s"), IsCrouching ? TEXT("True") : TEXT("False")));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsOnGround: %s"), IsOnGround ? TEXT("True") : TEXT("False")));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsJumping: %s"), IsJumping ? TEXT("True") : TEXT("False")));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("IsFalling: %s"), IsFalling ? TEXT("True") : TEXT("False")));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("Directon: %d"), (uint8)LocalVelocityDirection));
 
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
 	MessageSubsystem.BroadcastMessage(EqZeroGameplayTags::EqZero_Anim_Debug, DebugMessage);
@@ -147,7 +147,14 @@ void UEqZeroAnimInstance::UpdateRotationData()
 	YawDeltaSpeed = YawDeltaSinceLastUpdate / GetWorld()->GetDeltaSeconds();
 	WorldRotation = NewWorldRotation;
 
-	AdditiveLeanAngle = YawDeltaSpeed * 0.0375; // TODO tmp value
+	if (IsCrouching || GameplayTag_IsADS)
+	{
+		AdditiveLeanAngle = YawDeltaSpeed * 0.025;
+	}
+	else
+	{
+		AdditiveLeanAngle = YawDeltaSpeed * 0.0375;
+	}
 
 	if (IsFirstUpdate)
 	{
@@ -268,7 +275,8 @@ EEqZeroCardinalDirection UEqZeroAnimInstance::GetOppositeCardinalDirection(EEqZe
 
 void UEqZeroAnimInstance::UpdateWallDetectionHeuristic()
 {
-	// 该逻辑通过检查速度和加速度之间是否存在大角度（即角色正朝着墙壁推进，但实际上却在向侧面滑动）以及角色是否在尝试加速但速度相对较低，来判断角色是否正在撞到墙上。
+	// 该逻辑通过检查速度和加速度之间是否存在大角度（即角色正朝着墙壁推进，但实际上却在向侧面滑动）
+	// 以及角色是否在尝试加速但速度相对较低，来判断角色是否正在撞到墙上。
 
 	IsRunningIntoWall = false;
 	if (LocalAcceleration2D.Size() > 0.1f && LocalVelocity2D.Size() < 200.0f)
@@ -389,6 +397,26 @@ void UEqZeroAnimInstance::SetRootYawOffset(float InRootYawOffset)
 		RootYawOffset = UKismetMathLibrary::ClampAngle(NormalizedAngle, ClampRange.X, ClampRange.Y);
 	}
 	AimYaw = RootYawOffset;
+}
+
+void UEqZeroAnimInstance::ProcessTurnYawCurve()
+{
+	float PreviousTurnYawCurveValue = TurnYawCurveValue;
+	TurnYawCurveValue = GetCurveValue(TEXT("TurnYawCurve"));
+
+	if (FMath::IsNearlyZero(TurnYawCurveValue))
+	{
+		PreviousTurnYawCurveValue = 0.f;
+		TurnYawCurveValue = 0.f;
+		return;
+	}
+
+	TurnYawCurveValue = GetCurveValue(TEXT("RemainingTurnYaw")) / TurnYawCurveValue;
+	if (!FMath::IsNearlyZero(PreviousTurnYawCurveValue))
+	{
+		float DeltaTurnYawCurveValue = TurnYawCurveValue - PreviousTurnYawCurveValue;
+		SetRootYawOffset(RootYawOffset - DeltaTurnYawCurveValue);
+	}
 }
 
 void UEqZeroAnimInstance::UpdateAimingData()

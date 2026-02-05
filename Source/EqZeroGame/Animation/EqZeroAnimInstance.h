@@ -48,7 +48,6 @@ protected:
 	void UpdateWallDetectionHeuristic();
 	void UpdateCharacterStateData(float DeltaSeconds);
 	void UpdateBlendWeightData(float DeltaSeconds);
-	void UpdateRootYawOffset(float DeltaSeconds);
 	void UpdateAimingData();
 	void UpdateJumpFallData();
 
@@ -64,8 +63,14 @@ protected:
 	/**
 	 * Turn In Place
 	 */
-	UFUNCTION(BlueprintCallable, Category = "EqZero|Turn In Place")
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Turn In Place", meta = (BlueprintThreadSafe))
 	void SetRootYawOffset(float InRootYawOffset);
+	
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Turn In Place", meta = (BlueprintThreadSafe))
+	void ProcessTurnYawCurve();
+	
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Turn In Place", meta = (BlueprintThreadSafe))
+	void UpdateRootYawOffset(float DeltaSeconds);
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayTags")
 	FGameplayTagBlueprintPropertyMap GameplayTagPropertyMap;
