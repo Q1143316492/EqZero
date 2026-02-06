@@ -21,22 +21,24 @@ class IEqZeroCameraAssistInterface
 
 public:
 	/**
-	 * Get the list of actors that we're allowing the camera to penetrate. Useful in 3rd person cameras
-	 * when you need the following camera to ignore things like the a collection of view targets, the pawn,
-	 * a vehicle..etc.
+	 * 获取允许相机穿透的Actor列表，在第三人称相机中非常实用。
+	 * 比如第三人称跟拍相机需要忽略视角目标、玩家Pawn、载具等对象时，可将其加入该列表，避免相机被这些自身相关对象阻挡。
 	 */
 	virtual void GetIgnoredActorsForCameraPenetration(TArray<const AActor*>& OutActorsAllowPenetration) const { }
 
 	/**
-	 * The target actor to prevent penetration on.  Normally, this is almost always the view target, which if
-	 * unimplemented will remain true.  However, sometimes the view target, isn't the same as the root actor
-	 * you need to keep in frame.
+	 * 相机需要防止穿透的目标Actor。
+	 * 正常情况下，该目标几乎都是相机的视角目标（ViewTarget），若不实现此接口，将沿用这一默认逻辑。
+	 * 但部分场景中，相机的视角目标和需要始终保持在画面内的根Actor并非同一个对象，此时可通过该接口自定义目标。
 	 */
 	virtual TOptional<AActor*> GetCameraPreventPenetrationTarget() const
 	{
 		return TOptional<AActor*>();
 	}
 
-	/** Called if the camera penetrates the focal target.  Useful if you want to hide the target actor when being overlapped. */
+	/**
+	 * 当相机穿透焦点目标时触发的回调。
+	 * 若需要在相机与目标重叠时隐藏该目标Actor（比如相机穿模角色时隐藏角色模型），可在该接口中实现相关逻辑。
+	 */
 	virtual void OnCameraPenetratingTarget() { }
 };

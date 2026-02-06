@@ -4,6 +4,7 @@
 
 // #include "Development/EqZeroDeveloperSettings.h"
 // #include "Development/EqZeroPlatformEmulationSettings.h"
+#include "Development/EqZeroDeveloperSettings.h"
 #include "Engine/GameInstance.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "GameModes/EqZeroWorldSettings.h"
@@ -75,7 +76,7 @@ FGameInstancePIEResult UEqZeroEditorEngine::PreCreatePIEInstances(const bool bAn
 	}
 
 	// TODO cwl 这两个设置还没有 Should add delegates that a *non-editor* module could bind to for PIE start/stop instead of poking directly
-	// GetDefault<UEqZeroDeveloperSettings>()->OnPlayInEditorStarted();
+	GetDefault<UEqZeroDeveloperSettings>()->OnPlayInEditorStarted();
 	// GetDefault<UEqZeroPlatformEmulationSettings>()->OnPlayInEditorStarted();
 
 	//

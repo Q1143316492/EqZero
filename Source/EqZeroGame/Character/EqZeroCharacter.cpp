@@ -21,6 +21,8 @@
 #include "EqZeroCharacterMovementComponent.h"
 // #include "System/EqZeroSignificanceManager.h"
 
+#include "Camera/EqZeroCameraComponent.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroCharacter)
 
 class AActor;
@@ -80,9 +82,8 @@ AEqZeroCharacter::AEqZeroCharacter(const FObjectInitializer& ObjectInitializer)
 	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
 	HealthComponent->OnDeathFinished.AddDynamic(this, &ThisClass::OnDeathFinished);
 
-	// TODO: Create CameraComponent when UEqZeroCameraComponent is available
-	// CameraComponent = CreateDefaultSubobject<UEqZeroCameraComponent>(TEXT("CameraComponent"));
-	// CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
+	CameraComponent = CreateDefaultSubobject<UEqZeroCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 
 	bUseControllerRotationPitch = false;
 

@@ -37,7 +37,6 @@ protected:
 	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
 
 private:
-	/** The UI camera component, used for specific UI camera adjustments */
 	UPROPERTY(Transient)
 	TObjectPtr<class UEqZeroUICameraManagerComponent> UICamera;
 };

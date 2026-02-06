@@ -176,7 +176,7 @@ void UEqZeroHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager*
 		{
 			if (UEqZeroCameraComponent* CameraComponent = UEqZeroCameraComponent::FindCameraComponent(Pawn))
 			{
-				// CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
 			}
 		}
 	}
