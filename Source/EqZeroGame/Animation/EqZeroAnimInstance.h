@@ -243,7 +243,7 @@ protected:
 	FVector2D RootYawOffsetAngleClampCrouched = FVector2D(-90.f, 80.f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
-	bool IsFirstUpdate;
+	bool IsFirstUpdate = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
 	bool EnableControlRig;
@@ -252,5 +252,5 @@ protected:
 	bool UseFootPlacement;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
-	bool bEnableRootYawOffset;
+	bool bEnableRootYawOffset = true;
 };

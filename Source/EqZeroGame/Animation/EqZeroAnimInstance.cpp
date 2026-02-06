@@ -402,7 +402,7 @@ void UEqZeroAnimInstance::SetRootYawOffset(float InRootYawOffset)
 void UEqZeroAnimInstance::ProcessTurnYawCurve()
 {
 	float PreviousTurnYawCurveValue = TurnYawCurveValue;
-	TurnYawCurveValue = GetCurveValue(TEXT("TurnYawCurve"));
+	TurnYawCurveValue = GetCurveValue(TEXT("TurnYawWeight"));
 
 	if (FMath::IsNearlyZero(TurnYawCurveValue))
 	{
