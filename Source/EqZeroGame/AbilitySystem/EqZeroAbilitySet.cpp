@@ -80,7 +80,7 @@ void UEqZeroAbilitySet::GiveToAbilitySystem(UEqZeroAbilitySystemComponent* EqZer
 		return;
 	}
 
-	// Grant the attribute sets.
+	// AS
 	for (int32 SetIndex = 0; SetIndex < GrantedAttributes.Num(); ++SetIndex)
 	{
 		const FEqZeroAbilitySet_AttributeSet& SetToGrant = GrantedAttributes[SetIndex];
@@ -100,7 +100,7 @@ void UEqZeroAbilitySet::GiveToAbilitySystem(UEqZeroAbilitySystemComponent* EqZer
 		}
 	}
 
-	// Grant the gameplay abilities.
+	// GA
 	for (int32 AbilityIndex = 0; AbilityIndex < GrantedGameplayAbilities.Num(); ++AbilityIndex)
 	{
 		const FEqZeroAbilitySet_GameplayAbility& AbilityToGrant = GrantedGameplayAbilities[AbilityIndex];
@@ -125,7 +125,7 @@ void UEqZeroAbilitySet::GiveToAbilitySystem(UEqZeroAbilitySystemComponent* EqZer
 		}
 	}
 
-	// Grant the gameplay effects.
+	// GE
 	for (int32 EffectIndex = 0; EffectIndex < GrantedGameplayEffects.Num(); ++EffectIndex)
 	{
 		const FEqZeroAbilitySet_GameplayEffect& EffectToGrant = GrantedGameplayEffects[EffectIndex];

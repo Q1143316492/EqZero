@@ -41,7 +41,7 @@ public:
 	UE_API virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 
 	/**
-	 * 取消技能，暖场阶段或者指令触发取消所有技能
+	 * 取消技能，例如暖场阶段全场效果，或者指令触发取消所有技能
 	 */
 	typedef TFunctionRef<bool(const UEqZeroGameplayAbility* EqZeroAbility, FGameplayAbilitySpecHandle Handle)> TShouldCancelAbilityFunc;
 	UE_API void CancelAbilitiesByFunc(TShouldCancelAbilityFunc ShouldCancelFunc, bool bReplicateCancelAbility);
@@ -58,7 +58,7 @@ public:
 	UE_API void ClearAbilityInput();
 
 	/**
-	 * 技能组
+	 * 技能激活组
 	 */
 	UE_API bool IsActivationGroupBlocked(EEqZeroAbilityActivationGroup Group) const;
 	UE_API void AddAbilityToActivationGroup(EEqZeroAbilityActivationGroup Group, UEqZeroGameplayAbility* EqZeroAbility);
@@ -70,15 +70,15 @@ public:
 	 */
 	
 	UE_API void AddDynamicTagGameplayEffect(const FGameplayTag& Tag);
+	
 	UE_API void RemoveDynamicTagGameplayEffect(const FGameplayTag& Tag);
 
-	/** Gets the ability target data associated with the given ability handle and activation info */
 	UE_API void GetAbilityTargetData(const FGameplayAbilitySpecHandle AbilityHandle, FGameplayAbilityActivationInfo ActivationInfo, FGameplayAbilityTargetDataHandle& OutTargetDataHandle);
 
 	UE_API void SetTagRelationshipMapping(UEqZeroAbilityTagRelationshipMapping* NewMapping);
 
-	/** Looks at ability tags and gathers additional required and blocking tags */
 	UE_API void GetAdditionalActivationTagRequirements(const FGameplayTagContainer& AbilityTags, FGameplayTagContainer& OutActivationRequired, FGameplayTagContainer& OutActivationBlocked) const;
+
 	UE_API void TryActivateAbilitiesOnSpawn();
 
 protected:

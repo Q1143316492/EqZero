@@ -33,6 +33,7 @@ struct FGameplayEffectSpec;
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
+ * Attribute 数值变化的广播通用代理
  * Delegate used to broadcast attribute events, some of these parameters may be null on clients:
  * @param EffectInstigator	The original instigating actor for this event
  * @param EffectCauser		The physical actor that caused the change

@@ -4,39 +4,30 @@
 #include "EqZeroLogChannels.h"
 #include "AbilitySystem/EqZeroAbilitySystemComponent.h"
 #include "AbilitySystemLog.h"
-// TODO: Uncomment when EqZeroPlayerController is created
-// #include "Player/EqZeroPlayerController.h"
-// TODO: Uncomment when EqZeroCharacter is created
-// #include "Character/EqZeroCharacter.h"
+#include "Player/EqZeroPlayerController.h"
+#include "Character/EqZeroCharacter.h"
 #include "EqZeroGameplayTags.h"
-// TODO: Uncomment when EqZeroAbilityCost is created
-// #include "EqZeroAbilityCost.h"
-// TODO: Uncomment when EqZeroHeroComponent is created
-// #include "Character/EqZeroHeroComponent.h"
+#include "EqZeroAbilityCost.h"
+#include "Character/EqZeroHeroComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
-// TODO: Uncomment when EqZeroAbilitySimpleFailureMessage is created
-// #include "EqZeroAbilitySimpleFailureMessage.h"
+#include "EqZeroAbilitySimpleFailureMessage.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
-// TODO: Uncomment when EqZeroAbilitySourceInterface is created
-// #include "AbilitySystem/EqZeroAbilitySourceInterface.h"
-// TODO: Uncomment when EqZeroGameplayEffectContext is created
-// #include "AbilitySystem/EqZeroGameplayEffectContext.h"
-// TODO: Uncomment when PhysicalMaterialWithTags is created
-// #include "Physics/PhysicalMaterialWithTags.h"
+#include "AbilitySystem/EqZeroAbilitySourceInterface.h"
+#include "AbilitySystem/EqZeroGameplayEffectContext.h"
+#include "Physics/PhysicalMaterialWithTags.h"
 #include "GameFramework/PlayerState.h"
-// TODO: Uncomment when EqZeroCameraMode is created
-// #include "Camera/EqZeroCameraMode.h"
+#include "Camera/EqZeroCameraMode.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroGameplayAbility)
 
-#define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)                                               \
-{                                                                                                                         \
-	if (!ensure(IsInstantiated()))                                                                                    \
-	{                                                                                                                 \
-		ABILITY_LOG(Error, TEXT("%s: " #FunctionName " cannot be called on a non-instanced ability. Check the instancing policy."), *GetPathName());       \
-		return ReturnValue;                                                                                       \
-	}                                                                                                                 \
+#define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)                                                                               \
+{                                                                                                                                                         \
+	if (!ensure(IsInstantiated()))                                                                                                                        \
+	{                                                                                                                                                     \
+		ABILITY_LOG(Error, TEXT("%s: " #FunctionName " cannot be called on a non-instanced ability. Check the instancing policy."), *GetPathName());      \
+		return ReturnValue;                                                                                                                               \
+	}                                                                                                                                                     \
 }
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_ABILITY_SIMPLE_FAILURE_MESSAGE, "Ability.UserFacingSimpleActivateFail.Message");
@@ -63,13 +54,10 @@ UEqZeroAbilitySystemComponent* UEqZeroGameplayAbility::GetEqZeroAbilitySystemCom
 	return (CurrentActorInfo ? Cast<UEqZeroAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);
 }
 
-// TODO: Uncomment when EqZeroPlayerController is created
-/*
 AEqZeroPlayerController* UEqZeroGameplayAbility::GetEqZeroPlayerControllerFromActorInfo() const
 {
 	return (CurrentActorInfo ? Cast<AEqZeroPlayerController>(CurrentActorInfo->PlayerController.Get()) : nullptr);
 }
-*/
 
 AController* UEqZeroGameplayAbility::GetControllerFromActorInfo() const
 {
@@ -101,21 +89,15 @@ AController* UEqZeroGameplayAbility::GetControllerFromActorInfo() const
 	return nullptr;
 }
 
-// TODO: Uncomment when EqZeroCharacter is created
-/*
 AEqZeroCharacter* UEqZeroGameplayAbility::GetEqZeroCharacterFromActorInfo() const
 {
 	return (CurrentActorInfo ? Cast<AEqZeroCharacter>(CurrentActorInfo->AvatarActor.Get()) : nullptr);
 }
-*/
 
-// TODO: Uncomment when EqZeroHeroComponent is created
-/*
 UEqZeroHeroComponent* UEqZeroGameplayAbility::GetHeroComponentFromActorInfo() const
 {
 	return (CurrentActorInfo ? UEqZeroHeroComponent::FindHeroComponent(CurrentActorInfo->AvatarActor.Get()) : nullptr);
 }
-*/
 
 void UEqZeroGameplayAbility::NativeOnAbilityFailedToActivate(const FGameplayTagContainer& FailedReason) const
 {
@@ -126,8 +108,6 @@ void UEqZeroGameplayAbility::NativeOnAbilityFailedToActivate(const FGameplayTagC
 		{
 			if (const FText* pUserFacingMessage = FailureTagToUserFacingMessages.Find(Reason))
 			{
-				// TODO: Uncomment when EqZeroAbilitySimpleFailureMessage is created
-				/*
 				FEqZeroAbilitySimpleFailureMessage Message;
 				Message.PlayerController = GetActorInfo().PlayerController.Get();
 				Message.FailureTags = FailedReason;
@@ -136,7 +116,6 @@ void UEqZeroGameplayAbility::NativeOnAbilityFailedToActivate(const FGameplayTagC
 				UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 				MessageSystem.BroadcastMessage(TAG_ABILITY_SIMPLE_FAILURE_MESSAGE, Message);
 				bSimpleFailureFound = true;
-				*/
 			}
 		}
 
@@ -172,8 +151,7 @@ bool UEqZeroGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle
 	{
 		if (OptionalRelevantTags)
 		{
-			// TODO: Uncomment when EqZeroGameplayTags is populated
-			// OptionalRelevantTags->AddTag(EqZeroGameplayTags::Ability_ActivateFail_ActivationGroup);
+			OptionalRelevantTags->AddTag(EqZeroGameplayTags::Ability_ActivateFail_ActivationGroup);
 		}
 		return false;
 	}
@@ -228,18 +206,15 @@ bool UEqZeroGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, 
 		return false;
 	}
 
-	// Verify we can afford any additional costs
-	for (const TObjectPtr<UObject>& AdditionalCost : AdditionalCosts)
+	// 校验Cost
+	for (const TObjectPtr<UEqZeroAbilityCost>& AdditionalCost : AdditionalCosts)
 	{
 		if (AdditionalCost != nullptr)
 		{
-			// TODO: Uncomment when EqZeroAbilityCost is created
-			/*
 			if (!AdditionalCost->CheckCost(this, Handle, ActorInfo, OptionalRelevantTags))
 			{
 				return false;
 			}
-			*/
 		}
 	}
 
@@ -252,7 +227,7 @@ void UEqZeroGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, 
 
 	check(ActorInfo);
 
-	// Used to determine if the ability actually hit a target (as some costs are only spent on successful attempts)
+	// 用于确定该能力是否确实击中了目标（因为有些消耗只在成功尝试时才会产生）
 	auto DetermineIfAbilityHitTarget = [&]()
 	{
 		if (ActorInfo->IsNetAuthority())
@@ -274,15 +249,13 @@ void UEqZeroGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, 
 		return false;
 	};
 
-	// Pay any additional costs
+	// 应用花费
 	bool bAbilityHitTarget = false;
 	bool bHasDeterminedIfAbilityHitTarget = false;
-	for (const TObjectPtr<UObject>& AdditionalCost : AdditionalCosts)
+	for (const TObjectPtr<UEqZeroAbilityCost>& AdditionalCost : AdditionalCosts)
 	{
 		if (AdditionalCost != nullptr)
 		{
-			// TODO: Uncomment when EqZeroAbilityCost is created
-			/*
 			if (AdditionalCost->ShouldOnlyApplyCostOnHit())
 			{
 				if (!bHasDeterminedIfAbilityHitTarget)
@@ -298,7 +271,6 @@ void UEqZeroGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, 
 			}
 
 			AdditionalCost->ApplyCost(this, Handle, ActorInfo, ActivationInfo);
-			*/
 		}
 	}
 }
@@ -307,8 +279,6 @@ FGameplayEffectContextHandle UEqZeroGameplayAbility::MakeEffectContext(const FGa
 {
 	FGameplayEffectContextHandle ContextHandle = Super::MakeEffectContext(Handle, ActorInfo);
 
-	// TODO: Uncomment when EqZeroGameplayEffectContext is created
-	/*
 	FEqZeroGameplayEffectContext* EffectContext = FEqZeroGameplayEffectContext::ExtractEffectContext(ContextHandle);
 	check(EffectContext);
 
@@ -326,7 +296,6 @@ FGameplayEffectContextHandle UEqZeroGameplayAbility::MakeEffectContext(const FGa
 	EffectContext->SetAbilitySource(AbilitySource, SourceLevel);
 	EffectContext->AddInstigator(Instigator, EffectCauser);
 	EffectContext->AddSourceObject(SourceObject);
-	*/
 
 	return ContextHandle;
 }
@@ -337,13 +306,10 @@ void UEqZeroGameplayAbility::ApplyAbilityTagsToGameplayEffectSpec(FGameplayEffec
 
 	if (const FHitResult* HitResult = Spec.GetContext().GetHitResult())
 	{
-		// TODO: Uncomment when PhysicalMaterialWithTags is created
-		/*
 		if (const UPhysicalMaterialWithTags* PhysMatWithTags = Cast<const UPhysicalMaterialWithTags>(HitResult->PhysMaterial.Get()))
 		{
 			Spec.CapturedTargetTags.GetSpecTags().AppendTags(PhysMatWithTags->Tags);
 		}
-		*/
 	}
 }
 
@@ -387,14 +353,11 @@ bool UEqZeroGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySys
 
 		if (AbilitySystemComponentTags.HasAny(AllBlockedTags))
 		{
-			// TODO: Uncomment when EqZeroGameplayTags is populated
-			/*
 			if (OptionalRelevantTags && AbilitySystemComponentTags.HasTag(EqZeroGameplayTags::Status_Death))
 			{
 				// If player is dead and was rejected due to blocking tags, give that feedback
 				OptionalRelevantTags->AddTag(EqZeroGameplayTags::Ability_ActivateFail_IsDead);
 			}
-			*/
 
 			bBlocked = true;
 		}
@@ -462,7 +425,7 @@ void UEqZeroGameplayAbility::OnPawnAvatarSet()
 	K2_OnPawnAvatarSet();
 }
 
-void UEqZeroGameplayAbility::GetAbilitySource(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, float& OutSourceLevel, const UObject*& OutAbilitySource, AActor*& OutEffectCauser) const
+void UEqZeroGameplayAbility::GetAbilitySource(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, float& OutSourceLevel, const IEqZeroAbilitySourceInterface*& OutAbilitySource, AActor*& OutEffectCauser) const
 {
 	OutSourceLevel = 0.0f;
 	OutAbilitySource = nullptr;
@@ -472,14 +435,12 @@ void UEqZeroGameplayAbility::GetAbilitySource(FGameplayAbilitySpecHandle Handle,
 
 	// If we were added by something that's an ability info source, use it
 	UObject* SourceObject = GetSourceObject(Handle, ActorInfo);
-
-	// TODO: Uncomment when IEqZeroAbilitySourceInterface is created
-	// OutAbilitySource = Cast<IEqZeroAbilitySourceInterface>(SourceObject);
+	OutAbilitySource = Cast<IEqZeroAbilitySourceInterface>(SourceObject);
 }
 
 void UEqZeroGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const
 {
-	// Try to activate if activation policy is on spawn.
+	// 技能配置的Policy是 Spawn的时候就要激活
 	if (ActorInfo && !Spec.IsActive() && (ActivationPolicy == EEqZeroAbilityActivationPolicy::OnSpawn))
 	{
 		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
@@ -555,18 +516,15 @@ bool UEqZeroGameplayAbility::ChangeActivationGroup(EEqZeroAbilityActivationGroup
 	return true;
 }
 
-void UEqZeroGameplayAbility::SetCameraMode(TSubclassOf<UObject> CameraMode)
+void UEqZeroGameplayAbility::SetCameraMode(TSubclassOf<UEqZeroCameraMode> CameraMode)
 {
 	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(SetCameraMode, );
 
-	// TODO: Uncomment when EqZeroHeroComponent is created
-	/*
 	if (UEqZeroHeroComponent* HeroComponent = GetHeroComponentFromActorInfo())
 	{
 		HeroComponent->SetAbilityCameraMode(CameraMode, CurrentSpecHandle);
 		ActiveCameraMode = CameraMode;
 	}
-	*/
 }
 
 void UEqZeroGameplayAbility::ClearCameraMode()
@@ -575,13 +533,10 @@ void UEqZeroGameplayAbility::ClearCameraMode()
 
 	if (ActiveCameraMode)
 	{
-		// TODO: Uncomment when EqZeroHeroComponent is created
-		/*
 		if (UEqZeroHeroComponent* HeroComponent = GetHeroComponentFromActorInfo())
 		{
 			HeroComponent->ClearAbilityCameraMode(CurrentSpecHandle);
 		}
-		*/
 
 		ActiveCameraMode = nullptr;
 	}

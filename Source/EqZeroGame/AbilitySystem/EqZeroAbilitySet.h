@@ -116,8 +116,13 @@ public:
 
 	UEqZeroAbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	// Grants the ability set to the specified ability system component.
-	// The returned handles can be used later to take away anything that was granted.
+	/**
+	 * 将这个AbilitySet授予一个AbilitySystemComponent，并返回授予的技能和效果的Handle
+	 * @param EqZeroASC 目标AbilitySystemComponent
+	 * @param OutGrantedHandles 输出参数，包含授予的技能和效果的Handle
+	 * @param SourceObject 授予来源对象，可选参数，通常用于提供上下文信息（比如哪个物品或角色授予了这个AbilitySet）
+	 * @return void
+	 */
 	void GiveToAbilitySystem(UEqZeroAbilitySystemComponent* EqZeroASC, FEqZeroAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
 
 protected:

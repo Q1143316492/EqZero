@@ -50,6 +50,7 @@ void UEqZeroAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, A
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
 
 	// 如果 avatar 变了，重新初始化
+	// 我们的ASC是在PlayerState，重生的时候Avatar会变。或者是业务上的操控角色变化
 	if (bHasNewPawnAvatar)
 	{
 		// Notify all abilities that a new pawn avatar has been set
@@ -71,24 +72,26 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 			}
 		}
 
-		// Register with the global system once we actually have a pawn avatar. We wait until this time since some globally-applied effects may require an avatar.
+		// 全局注册一下ASC，这样就能一下子让全部角色播放技能了。这是一个WorldSubSystem
 		if (UEqZeroGlobalAbilitySystem* GlobalAbilitySystem = UWorld::GetSubsystem<UEqZeroGlobalAbilitySystem>(GetWorld()))
 		{
 			GlobalAbilitySystem->RegisterASC(this);
 		}
 
-
+		// 重新关联动画和ASC
 		if (UEqZeroAnimInstance* EqZeroAnimInst = Cast<UEqZeroAnimInstance>(ActorInfo->GetAnimInstance()))
 		{
 			EqZeroAnimInst->InitializeWithAbilitySystem(this);
 		}
 
+		// 激活OnSpawn的时候就要激活的技能
 		TryActivateAbilitiesOnSpawn();
 	}
 }
 
 void UEqZeroAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
 {
+	// 激活OnSpawn的时候就要激活的技能
 	ABILITYLIST_SCOPE_LOCK();
 	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
@@ -101,6 +104,8 @@ void UEqZeroAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
 
 void UEqZeroAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc ShouldCancelFunc, bool bReplicateCancelAbility)
 {
+	// 简单概况就是 通过 ShouldCancelFunc 检查需要取激活的技能，取消调用
+	
 	ABILITYLIST_SCOPE_LOCK();
 	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
@@ -143,6 +148,7 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 void UEqZeroAbilitySystemComponent::CancelInputActivatedAbilities(bool bReplicateCancelAbility)
 {
+	// 从GM指令发起的取消激活技能
 	auto ShouldCancelFunc = [this](const UEqZeroGameplayAbility* EqZeroAbility, FGameplayAbilitySpecHandle Handle)
 	{
 		const EEqZeroAbilityActivationPolicy ActivationPolicy = EqZeroAbility->GetActivationPolicy();
@@ -165,7 +171,8 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		FPredictionKey OriginalPredictionKey = Instance ? Instance->GetCurrentActivationInfo().GetActivationPredictionKey() : Spec.ActivationInfo.GetActivationPredictionKey();
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
-		// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
+		// Invoke the InputPressed event. This is not replicated here.
+		// If someone is listening, they may replicate the InputPressed event to the server.
 		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, OriginalPredictionKey);
 	}
 }
@@ -229,10 +236,10 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 	static TArray<FGameplayAbilitySpecHandle> AbilitiesToActivate;
 	AbilitiesToActivate.Reset();
 
-	//@TODO: See if we can use FScopedServerAbilityRPCBatcher ScopedRPCBatcher in some of these loops
+	// 官方留了一个待办，想用 FScopedServerAbilityRPCBatcher ScopedRPCBatcher 优化一下下面这堆循环
 
 	//
-	// Process all abilities that activate when the input is held.
+	// 处理所有按住触发的技能
 	//
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputHeldSpecHandles)
 	{
@@ -250,7 +257,7 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 	}
 
 	//
-	// Process all abilities that had their input pressed this frame.
+	// 按下触发的技能
 	//
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputPressedSpecHandles)
 	{
@@ -278,18 +285,16 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 		}
 	}
 
-	//
-	// Try to activate all the abilities that are from presses and holds.
-	// We do it all at once so that held inputs don't activate the ability
-	// and then also send a input event to the ability because of the press.
-	//
+	// 尝试激活所有通过按压和长按触发的能力。
+	// 我们一次性完成所有操作，这样长按输入就不会激活该能力
+	// 然后也不会因为按压而向该能力发送输入事件。
 	for (const FGameplayAbilitySpecHandle& AbilitySpecHandle : AbilitiesToActivate)
 	{
 		TryActivateAbility(AbilitySpecHandle);
 	}
 
 	//
-	// Process all abilities that had their input released this frame.
+	// 处理所有松开触发的技能
 	//
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputReleasedSpecHandles)
 	{
@@ -308,9 +313,6 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 		}
 	}
 
-	//
-	// Clear the cached ability handles.
-	//
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
 }
@@ -446,11 +448,14 @@ void UEqZeroAbilitySystemComponent::AddAbilityToActivationGroup(EEqZeroAbilityAc
 	switch (Group)
 	{
 	case EEqZeroAbilityActivationGroup::Independent:
-		// Independent abilities do not cancel any other abilities.
+		// Independent abilities 什么也不需要
 		break;
 
 	case EEqZeroAbilityActivationGroup::Exclusive_Replaceable:
 	case EEqZeroAbilityActivationGroup::Exclusive_Blocking:
+		// 进来一个 可替代其他技能的技能，或者是阻塞其他技能的技能，就取消其他可被替代的技能Exclusive_Replaceable除了自己
+		// 项目实际上所有技能都是独立的(没找到)，只有死亡技能会强改一个 Exclusive_Blocking 写进来，然后尝试取消其他技能。
+		// 都是其他技能开火啥的都是独立的，也没有需要取消的。
 		CancelActivationGroupAbilities(EEqZeroAbilityActivationGroup::Exclusive_Replaceable, EqZeroAbility, bReplicateCancelAbility);
 		break;
 
@@ -459,6 +464,7 @@ void UEqZeroAbilitySystemComponent::AddAbilityToActivationGroup(EEqZeroAbilityAc
 		break;
 	}
 
+	// 跑进去应该是逻辑错误了，才会有多个独占技能在运行
 	const int32 ExclusiveCount = ActivationGroupCounts[(uint8)EEqZeroAbilityActivationGroup::Exclusive_Replaceable] + ActivationGroupCounts[(uint8)EEqZeroAbilityActivationGroup::Exclusive_Blocking];
 	if (!ensure(ExclusiveCount <= 1))
 	{
