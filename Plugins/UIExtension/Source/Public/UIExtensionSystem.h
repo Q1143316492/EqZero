@@ -244,11 +244,19 @@ protected:
 	UE_API FUIExtensionRequest CreateExtensionRequest(const TSharedPtr<FUIExtension>& Extension);
 
 private:
-	// 由扩展点注册过来，我有一个TAG这个的点
+	/*
+	 * UMG上的扩展点说：我这里有个插槽，Tag=X，接受 UUserWidget 子类
+	 * 通过：
+	 * ExtensionSubsystem->RegisterExtensionPoint
+	 * ExtensionSubsystem->RegisterExtensionPointForContext
+	 */
 	typedef TArray<TSharedPtr<FUIExtensionPoint>> FExtensionPointList;
 	TMap<FGameplayTag, FExtensionPointList> ExtensionPointMap;
 
-	// 我有一个Widget，要挂在某个点上
+	/*
+	 * GameFeatureFeature或者技能说: 我有个 Widget 类，要挂到 Tag=X 的插槽上
+	 * 通过 ExtensionSubsystem->RegisterExtensionAsWidgetForContext
+	 */
 	typedef TArray<TSharedPtr<FUIExtension>> FExtensionList;
 	TMap<FGameplayTag, FExtensionList> ExtensionMap;
 };

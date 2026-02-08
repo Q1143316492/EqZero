@@ -34,6 +34,7 @@ public class EqZeroGame : ModuleRules
 				"GameplayTasks",
 				"GameplayAbilities",
 				"AIModule",
+				"NavigationSystem",
 				"ModularGameplay",
 				"ModularGameplayActors",
 				"DataRegistry",

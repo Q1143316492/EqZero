@@ -195,7 +195,7 @@ void UUIExtensionSubsystem::NotifyExtensionPointOfExtensions(TSharedPtr<FUIExten
 				if (ExtensionPoint->DoesExtensionPassContract(Extension.Get()))
 				{
 					FUIExtensionRequest Request = CreateExtensionRequest(Extension);
-					ExtensionPoint->Callback.ExecuteIfBound(EUIExtensionAction::Added, Request);
+					auto _ = ExtensionPoint->Callback.ExecuteIfBound(EUIExtensionAction::Added, Request);
 				}
 			}
 		}
@@ -224,7 +224,7 @@ void UUIExtensionSubsystem::NotifyExtensionPointsOfExtension(EUIExtensionAction 
 					if (ExtensionPoint->DoesExtensionPassContract(Extension.Get()))
 					{
 						FUIExtensionRequest Request = CreateExtensionRequest(Extension);
-						ExtensionPoint->Callback.ExecuteIfBound(Action, Request);
+						auto _ = ExtensionPoint->Callback.ExecuteIfBound(Action, Request);
 					}
 				}
 			}

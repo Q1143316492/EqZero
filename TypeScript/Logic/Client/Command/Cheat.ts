@@ -32,6 +32,18 @@ import { blueprint } from 'puerts';
                     console.log('  help - Show this help message');
                     console.log('  info - Show system info');
                 }
+                else if (Command === 'character') {
+                    // 拿到主character并执行一些操作
+                
+                    const self = this as unknown as UE.Object;
+                    const PC = UE.GameplayStatics.GetPlayerController(self, 0);
+                    if (PC) {
+                        const character = PC.Character;
+                        if (character) {
+                            DebugLog(`Character: ${character.GetName()}, Loc: ${character.K2_GetActorLocation()}`);
+                        }
+                    }
+                }
             }
 
             TSDebug(Message: string): void {
