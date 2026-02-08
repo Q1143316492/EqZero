@@ -11,6 +11,8 @@
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroGameplayAbility_Dash)
+
 UEqZeroGameplayAbility_Dash::UEqZeroGameplayAbility_Dash(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
