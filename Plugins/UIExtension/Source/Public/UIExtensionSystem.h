@@ -244,9 +244,11 @@ protected:
 	UE_API FUIExtensionRequest CreateExtensionRequest(const TSharedPtr<FUIExtension>& Extension);
 
 private:
+	// 由扩展点注册过来，我有一个TAG这个的点
 	typedef TArray<TSharedPtr<FUIExtensionPoint>> FExtensionPointList;
 	TMap<FGameplayTag, FExtensionPointList> ExtensionPointMap;
 
+	// 我有一个Widget，要挂在某个点上
 	typedef TArray<TSharedPtr<FUIExtension>> FExtensionList;
 	TMap<FGameplayTag, FExtensionList> ExtensionMap;
 };

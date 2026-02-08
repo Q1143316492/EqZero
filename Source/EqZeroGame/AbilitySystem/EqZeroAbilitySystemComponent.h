@@ -86,6 +86,9 @@ protected:
 	UE_API virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
 	UE_API virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
 
+	/*
+	 * 重写的函数
+	 */
 	UE_API virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
 	UE_API virtual void NotifyAbilityFailed(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, const FGameplayTagContainer& FailureReason) override;
 	UE_API virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, bool bWasCancelled) override;
