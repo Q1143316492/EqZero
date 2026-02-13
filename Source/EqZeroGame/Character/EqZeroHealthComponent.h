@@ -18,6 +18,7 @@ struct FGameplayEffectSpec;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEqZeroHealth_DeathEvent, AActor*, OwningActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FEqZeroHealth_AttributeChanged, UEqZeroHealthComponent*, HealthComponent, float, OldValue, float, NewValue, AActor*, Instigator);
+
 /**
  * EEqZeroDeathState
  *
@@ -34,8 +35,6 @@ enum class EEqZeroDeathState : uint8
 
 /**
  * UEqZeroHealthComponent
- *
- *      An actor component used to handle anything related to health.
  */
 UCLASS(MinimalAPI, Blueprintable, Meta=(BlueprintSpawnableComponent))
 class UEqZeroHealthComponent : public UGameFrameworkComponent
@@ -46,27 +45,31 @@ public:
 
 	UE_API UEqZeroHealthComponent(const FObjectInitializer& ObjectInitializer);
 
-	// Returns the health component if one exists on the specified actor.
+	/*
+	 * Getter
+	 */
 	UFUNCTION(BlueprintPure, Category = "EqZero|Health")
 	static UEqZeroHealthComponent* FindHealthComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UEqZeroHealthComponent>() : nullptr); }
 
-	// Initialize the component using an ability system component.
+	/*
+	 * 技能组件
+	 */
 	UFUNCTION(BlueprintCallable, Category = "EqZero|Health")
 	UE_API void InitializeWithAbilitySystem(UEqZeroAbilitySystemComponent* InASC);
 
-	// Uninitialize the component, clearing any references to the ability system.
 	UFUNCTION(BlueprintCallable, Category = "EqZero|Health")
 	UE_API void UninitializeFromAbilitySystem();
 
-	// Returns the current health value.
+	/*
+	 * Get Attribute
+	 */
 	UFUNCTION(BlueprintCallable, Category = "EqZero|Health")
 	UE_API float GetHealth() const;
 
-	// Returns the current maximum health value.
 	UFUNCTION(BlueprintCallable, Category = "EqZero|Health")
 	UE_API float GetMaxHealth() const;
 
-	// Returns the current health in the range [0.0, 1.0].
+	// 返回当前生命值在 [0.0, 1.0] 范围内的比例。
 	UFUNCTION(BlueprintCallable, Category = "EqZero|Health")
 	UE_API float GetHealthNormalized() const;
 
@@ -76,30 +79,29 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "EqZero|Health", Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool IsDeadOrDying() const { return (DeathState > EEqZeroDeathState::NotDead); }
 
-	// Begins the death sequence for the owner.
+	/*
+	 * 死亡流程
+	 */
 	UE_API virtual void StartDeath();
 
-	// Ends the death sequence for the owner.
 	UE_API virtual void FinishDeath();
 
-	// Applies enough damage to kill the owner.
 	UE_API virtual void DamageSelfDestruct(bool bFellOutOfWorld = false);
 
 public:
 
-	// Delegate fired when the health value has changed. This is called on the client but the instigator may not be valid
+	/*
+	 * 生命变化和死亡事件
+	 */
 	UPROPERTY(BlueprintAssignable)
 	FEqZeroHealth_AttributeChanged OnHealthChanged;
 
-	// Delegate fired when the max health value has changed. This is called on the client but the instigator may not be valid
 	UPROPERTY(BlueprintAssignable)
 	FEqZeroHealth_AttributeChanged OnMaxHealthChanged;
 
-	// Delegate fired when the death sequence has started.
 	UPROPERTY(BlueprintAssignable)
 	FEqZeroHealth_DeathEvent OnDeathStarted;
 
-	// Delegate fired when the death sequence has finished.
 	UPROPERTY(BlueprintAssignable)
 	FEqZeroHealth_DeathEvent OnDeathFinished;
 
@@ -117,16 +119,12 @@ protected:
 	UE_API virtual void OnRep_DeathState(EEqZeroDeathState OldDeathState);
 
 protected:
-
-	// Ability system used by this component.
 	UPROPERTY()
 	TObjectPtr<UEqZeroAbilitySystemComponent> AbilitySystemComponent;
 
-	// Health set used by this component.
 	UPROPERTY()
 	TObjectPtr<const UEqZeroHealthSet> HealthSet;
 
-	// Replicated state used to handle dying.
 	UPROPERTY(ReplicatedUsing = OnRep_DeathState)
 	EEqZeroDeathState DeathState;
 };

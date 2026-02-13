@@ -57,6 +57,12 @@ namespace EqZeroGameplayTags
 	// When extending EqZero, you can create your own movement modes but you need to update GetCustomMovementModeTagMap()
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Custom, "Movement.Mode.Custom", "This is invalid and should be replaced with custom tags.  See EqZeroGameplayTags::CustomMovementModeTagMap.");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Respawn_Duration_Message, "Ability.Respawn.Duration.Message", "Message containing the duration until respawn.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Respawn_Completed_Message, "Ability.Respawn.Completed.Message", "Message indicating respawn has completed.");
+	
+	// Ability.Type
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Type_StatusChange_Death, "Ability.Type.StatusChange.Death", "Status change ability tag for death.");
+	
 	// Unreal Movement Modes
 	const TMap<uint8, FGameplayTag> MovementModeTagMap =
 	{

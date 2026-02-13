@@ -186,6 +186,13 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
 	UE_API void K2_OnDeathFinished();
 
+	/**
+	 * 开启布娃娃物理模拟
+	 * 可以在蓝图中调用，例如在死亡蒙太奇播放结束后
+	 */
+	UFUNCTION(BlueprintCallable, Category = "EqZero|Character")
+	UE_API void StartRagdoll();
+
 	UE_API virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
 	UE_API void SetMovementModeTag(EMovementMode MovementMode, uint8 CustomMovementMode, bool bTagEnabled);
 
@@ -193,6 +200,13 @@ protected:
 	UE_API virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 	UE_API virtual bool CanJumpInternal_Implementation() const;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "EqZero|Character")
+	FName RagdollImpulseBone = FName("Pelvis");
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "EqZero|Character")
+	float RagdollImpulseStrength = 500.0f;
 
 private:
 

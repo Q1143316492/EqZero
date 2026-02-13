@@ -7,8 +7,7 @@
 #include "AbilitySystem/EqZeroAbilitySet.h"
 #include "AbilitySystem/EqZeroAbilitySystemComponent.h"
 #include "Character/EqZeroPawnData.h"
-// TODO: Implement pawn extension component when it's ported
-// #include "Character/EqZeroPawnExtensionComponent.h"
+#include "Character/EqZeroPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Engine/World.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
@@ -36,6 +35,17 @@ AEqZeroPlayerState::AEqZeroPlayerState(const FObjectInitializer& ObjectInitializ
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
+	/*
+	 * 这些属性集将由 AbilitySystemComponent::InitializeComponent 检测。保留一个引用，以确保这些集合在被检测前不会被垃圾回收。
+	 * --> ASC 在初始化时会自动发现并注册它们，无需显式调用 RegisterAttributeSet
+	 *
+	 * 另一个地方是 GiveToAbilitySystem 里面调用 AddAttributeSetSubobject
+	 * 
+	 * 以前的项目是这么写的
+	 * 	TArray<UAttributeSet*> AttributeSets;
+	 *	AttributeSets.Add(AttributeSet);
+	 *	AbilitySystemComponent->SetSpawnedAttributes(AttributeSets);
+	 */
 	HealthSet = CreateDefaultSubobject<UEqZeroHealthSet>(TEXT("HealthSet"));
 	CombatSet = CreateDefaultSubobject<UEqZeroCombatSet>(TEXT("CombatSet"));
 
@@ -65,8 +75,6 @@ void AEqZeroPlayerState::ClientInitialize(AController* C)
 void AEqZeroPlayerState::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
-
-	//@TODO: Copy stats
 }
 
 void AEqZeroPlayerState::OnDeactivated()
@@ -77,7 +85,7 @@ void AEqZeroPlayerState::OnDeactivated()
 	{
 		case EEqZeroPlayerConnectionType::Player:
 		case EEqZeroPlayerConnectionType::InactivePlayer:
-			//@TODO: Ask the experience if we should destroy disconnecting players immediately or leave them around
+			// TODO: Ask the experience if we should destroy disconnecting players immediately or leave them around
 			// (e.g., for long running servers where they might build up if lots of players cycle through)
 			bDestroyDeactivatedPlayerState = true;
 			break;

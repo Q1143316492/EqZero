@@ -65,7 +65,6 @@ void UEqZeroGameplayAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHan
 	{
 		MeleeCapsuleTrace();
 	}
-	
 }
 
 void UEqZeroGameplayAbility_Melee::MeleeCapsuleTrace()

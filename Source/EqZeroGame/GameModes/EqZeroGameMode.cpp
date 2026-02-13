@@ -27,6 +27,7 @@
 #include "Character/EqZeroPawnExtensionComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
+#include "Player/EqZeroPlayerSpawningManagerComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroGameMode)
 
@@ -162,7 +163,7 @@ void AEqZeroGameMode::HandleMatchAssignmentIfNotExpectingOne()
 			return;
 		}
 
-		//@TODO: Pull this from a config setting or something
+		// TODO: Pull this from a config setting or something
 		// 从配置设置中获取默认体验
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("EqZeroExperienceDefinition"), FName("B_EqDefaultExperience"));
 		ExperienceIdSource = TEXT("Default");
@@ -407,22 +408,20 @@ void AEqZeroGameMode::HandleStartingNewPlayer_Implementation(APlayerController* 
 
 AActor* AEqZeroGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
-	// TODO: 迁移 UEqZeroPlayerSpawningManagerComponent 后，使用该组件选择玩家生成点
-	// if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
-	// {
-	//     return PlayerSpawningComponent->ChoosePlayerStart(Player);
-	// }
+	if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
+	{
+		return PlayerSpawningComponent->ChoosePlayerStart(Player);
+	}
 	
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
 void AEqZeroGameMode::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
 {
-	// TODO: 迁移 UEqZeroPlayerSpawningManagerComponent 后，使用该组件完成玩家重生
-	// if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
-	// {
-	//     PlayerSpawningComponent->FinishRestartPlayer(NewPlayer, StartRotation);
-	// }
+	if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
+	{
+		PlayerSpawningComponent->FinishRestartPlayer(NewPlayer, StartRotation);
+	}
 	
 	Super::FinishRestartPlayer(NewPlayer, StartRotation);
 }
@@ -446,17 +445,16 @@ bool AEqZeroGameMode::ControllerCanRestart(AController* Controller)
 		// Bot version of Super::PlayerCanRestart_Implementation
 		// Bot 版本的 Super::PlayerCanRestart_Implementation
 		if ((Controller == nullptr) || Controller->IsPendingKillPending())
+		if ((Controller == nullptr) || Controller->IsPendingKillPending())
 		{
 			return false;
 		}
 	}
 
-	// TODO: 迁移 UEqZeroPlayerSpawningManagerComponent 后，使用该组件检查是否可以重生
-	// if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
-	// {
-	//     return PlayerSpawningComponent->ControllerCanRestart(Controller);
-	// }
-
+	if (UEqZeroPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UEqZeroPlayerSpawningManagerComponent>())
+	{
+		return PlayerSpawningComponent->ControllerCanRestart(Controller);
+	}
 	return true;
 }
 
@@ -500,12 +498,4 @@ void AEqZeroGameMode::FailedToRestartPlayer(AController* NewPlayer)
 	Super::FailedToRestartPlayer(NewPlayer);
 
 	// TODO: 添加重试逻辑，如果玩家生成失败，在下一帧再次尝试
-	// 可以参考 LyraGameMode 中的实现，使用 GetWorldTimerManager().SetTimerForNextTick
-	// if (APlayerController* NewPC = Cast<APlayerController>(NewPlayer))
-	// {
-	//     if (PlayerCanRestart(NewPC))
-	//     {
-	//         RequestPlayerRestartNextFrame(NewPlayer, false);
-	//     }
-	// }
 }

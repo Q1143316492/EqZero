@@ -59,7 +59,7 @@ void UEqZeroPawnExtensionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-    // 推进初始化状态机的状态
+    // 启动状态机
 	BindOnActorInitStateChanged(NAME_None, FGameplayTag(), false);
 	ensure(TryToChangeInitState(EqZeroGameplayTags::InitState_Spawned));
 	CheckDefaultInitialization();
@@ -69,7 +69,6 @@ void UEqZeroPawnExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayRe
 {
 	UninitializeAbilitySystem();
 	UnregisterInitStateFeature();
-
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -109,13 +108,12 @@ void UEqZeroPawnExtensionComponent::InitializeAbilitySystem(UEqZeroAbilitySystem
 
 	if (AbilitySystemComponent == InASC)
 	{
-		// The ability system component hasn't changed.
+		// ASC没有变化
 		return;
 	}
 
 	if (AbilitySystemComponent)
 	{
-		// Clean up the old ability system component.
 		UninitializeAbilitySystem();
 	}
 
@@ -125,8 +123,8 @@ void UEqZeroPawnExtensionComponent::InitializeAbilitySystem(UEqZeroAbilitySystem
 	UE_LOG(LogEqZero, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
 	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
 	{
-		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
-		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
+		// 已经有 pawn 作为 ASC 的 avatar, 所以我们需要干掉他
+		// 如果客户端出现延迟，就可能发生这种情况：他们的新角色在死亡的角色被移除之前就已生成并被控制。
 		ensure(!ExistingAvatar->HasAuthority());
 
 		if (UEqZeroPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
@@ -154,6 +152,7 @@ void UEqZeroPawnExtensionComponent::UninitializeAbilitySystem()
 	}
 
 	// Uninitialize the ASC if we're still the avatar actor (otherwise another pawn already did it when they became the avatar actor)
+	// 如果我们仍然是化身角色，就初始化 ASC（否则，另一个 pawn 在成为化身角色时已经完成了初始化）
 	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
 	{
 		FGameplayTagContainer AbilityTypesToIgnore;
@@ -227,7 +226,6 @@ bool UEqZeroPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMa
 	APawn* Pawn = GetPawn<APawn>();
 	if (!CurrentState.IsValid() && DesiredState == EqZeroGameplayTags::InitState_Spawned)
 	{
-		// As long as we are on a valid pawn, we count as spawned
 		if (Pawn)
 		{
 			return true;
@@ -235,7 +233,7 @@ bool UEqZeroPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMa
 	}
 	if (CurrentState == EqZeroGameplayTags::InitState_Spawned && DesiredState == EqZeroGameplayTags::InitState_DataAvailable)
 	{
-		// Pawn data is required.
+		// Pawn data 加载了，这个会在体验加载后，从PlayerState设置过来
 		if (!PawnData)
 		{
 			return false;
@@ -246,7 +244,7 @@ bool UEqZeroPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMa
 
 		if (bHasAuthority || bIsLocallyControlled)
 		{
-			// Check for being possessed by a controller.
+			// 检查已经 possessed by a controller.
 			if (!GetController<AController>())
 			{
 				return false;
@@ -257,7 +255,7 @@ bool UEqZeroPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentMa
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataAvailable && DesiredState == EqZeroGameplayTags::InitState_DataInitialized)
 	{
-		// Transition to initialize if all features have their data available
+		// 所有注册的组件都达到了 DataAvailable 状态
 		bool Result = Manager->HaveAllFeaturesReachedInitState(Pawn, EqZeroGameplayTags::InitState_DataAvailable);
 		return Result;
 	}
@@ -273,13 +271,12 @@ void UEqZeroPawnExtensionComponent::HandleChangeInitState(UGameFrameworkComponen
 {
 	if (DesiredState == EqZeroGameplayTags::InitState_DataInitialized)
 	{
-		// This is currently all handled by other components listening to this state change
 	}
 }
 
 void UEqZeroPawnExtensionComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
-	// If another feature is now in DataAvailable, see if we should transition to DataInitialized
+	// 如果现在有另一个功能处于 DataAvailable 状态，看看我们是否应该过渡到 DataInitialized 状态
 	if (Params.FeatureName != NAME_ActorFeatureName)
 	{
 		if (Params.FeatureState == EqZeroGameplayTags::InitState_DataAvailable)

@@ -14,8 +14,7 @@ struct FFrame;
 /**
  * UEqZeroCombatSet
  *
- *  Class that defines attributes that are necessary for applying damage or healing.
- *	Attribute examples include: damage, healing, attack power, and shield penetrations.
+ * 定义施加伤害或治疗所需属性的类。属性示例包括：伤害、治疗量、攻击力和破盾值。
  */
 UCLASS(BlueprintType)
 class UEqZeroCombatSet : public UEqZeroAttributeSet

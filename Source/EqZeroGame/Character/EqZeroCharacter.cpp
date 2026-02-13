@@ -14,14 +14,12 @@
 #include "Player/EqZeroPlayerState.h"
 #include "TimerManager.h"
 
-// TODO: Migrate these classes
-// #include "Camera/EqZeroCameraComponent.h"
+#include "Camera/EqZeroCameraComponent.h"
 #include "Character/EqZeroHealthComponent.h"
 #include "Character/EqZeroPawnExtensionComponent.h"
 #include "EqZeroCharacterMovementComponent.h"
 // #include "System/EqZeroSignificanceManager.h"
 
-#include "Camera/EqZeroCameraComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroCharacter)
 
@@ -297,9 +295,29 @@ void AEqZeroCharacter::FellOutOfWorld(const class UDamageType& dmgType)
 	HealthComponent->DamageSelfDestruct(/*bFellOutOfWorld=*/ true);
 }
 
-void AEqZeroCharacter::OnDeathStarted(AActor*)
+void AEqZeroCharacter::OnDeathStarted(AActor* OwningActor)
 {
 	DisableMovementAndCollision();
+}
+
+void AEqZeroCharacter::StartRagdoll()
+{
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		// 获取速度用于冲量
+		FVector LastVelocity = FVector::ZeroVector;
+		if (const UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		{
+			LastVelocity = MoveComp->GetLastUpdateVelocity();
+		}
+
+		MeshComp->SetCollisionProfileName(FName("Ragdoll"));
+		MeshComp->SetAllBodiesBelowSimulatePhysics(RagdollImpulseBone, true, true);
+
+		FVector ImpulseDir = LastVelocity.GetSafeNormal(0.0001f);
+		FVector Impulse = LastVelocity + (ImpulseDir * RagdollImpulseStrength);
+		MeshComp->AddImpulse(Impulse, NAME_None, true);
+	}
 }
 
 void AEqZeroCharacter::OnDeathFinished(AActor*)

@@ -68,6 +68,7 @@ void UEqZeroHeroComponent::OnRegister()
 	else
 	{
 		// Register with the init state system early, this will only work if this is a game world
+		// 尽早在初始状态系统中注册，这只有在这是游戏世界的情况下才会生效
 		RegisterInitStateFeature();
 	}
 }
@@ -80,7 +81,7 @@ bool UEqZeroHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Ma
 
 	if (!CurrentState.IsValid() && DesiredState == EqZeroGameplayTags::InitState_Spawned)
 	{
-		// As long as we have a real pawn, let us transition
+		// 挂在Pawn上就行
 		if (Pawn)
 		{
 			return true;
@@ -88,13 +89,13 @@ bool UEqZeroHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Ma
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_Spawned && DesiredState == EqZeroGameplayTags::InitState_DataAvailable)
 	{
-		// The player state is required.
+		// PlayerState 加载完成
 		if (!GetPlayerState<AEqZeroPlayerState>())
 		{
 			return false;
 		}
 
-		// If we're authority or autonomous, we need to wait for a controller with registered ownership of the player state.
+		// Controller 和 PlayerState 必须配对，除非这是一个 SimulatedProxy（因为模拟代理可能没有控制器）
 		if (Pawn->GetLocalRole() != ROLE_SimulatedProxy)
 		{
 			AController* Controller = GetController<AController>();
@@ -111,12 +112,10 @@ bool UEqZeroHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Ma
 
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 		const bool bIsBot = Pawn->IsBotControlled();
-
 		if (bIsLocallyControlled && !bIsBot)
 		{
+			// 主玩家的 输入和LocalPlayer加载OK
 			AEqZeroPlayerController* EqZeroPC = GetController<AEqZeroPlayerController>();
-
-			// The input component and local player is required when locally controlled.
 			if (!Pawn->InputComponent || !EqZeroPC || !EqZeroPC->GetLocalPlayer())
 			{
 				return false;
@@ -127,14 +126,12 @@ bool UEqZeroHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Ma
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataAvailable && DesiredState == EqZeroGameplayTags::InitState_DataInitialized)
 	{
-		// Wait for player state and extension component
 		AEqZeroPlayerState* EqZeroPS = GetPlayerState<AEqZeroPlayerState>();
-
 		return EqZeroPS && Manager->HasFeatureReachedInitState(Pawn, UEqZeroPawnExtensionComponent::NAME_ActorFeatureName, EqZeroGameplayTags::InitState_DataInitialized);
 	}
 	else if (CurrentState == EqZeroGameplayTags::InitState_DataInitialized && DesiredState == EqZeroGameplayTags::InitState_GameplayReady)
 	{
-		// TODO add ability initialization checks?
+		// 技能检查？
 		return true;
 	}
 
@@ -210,10 +207,8 @@ void UEqZeroHeroComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Listen for when the pawn extension component changes init state
+	// 启动状态机
 	BindOnActorInitStateChanged(UEqZeroPawnExtensionComponent::NAME_ActorFeatureName, FGameplayTag(), false);
-
-	// Notifies that we are done spawning, then try the rest of initialization
 	ensure(TryToChangeInitState(EqZeroGameplayTags::InitState_Spawned));
 	CheckDefaultInitialization();
 }
@@ -265,7 +260,7 @@ void UEqZeroHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCom
 
 							FModifyContextOptions Options = {};
 							Options.bIgnoreAllPressedKeysUntilRelease = false;
-							// Actually add the config to the local player
+							// 我们以前都是这么加 IMC 的，只是这里有点长。。。有点不认识了
 							Subsystem->AddMappingContext(IMC, Mapping.Priority, Options);
 						}
 					}
@@ -274,7 +269,7 @@ void UEqZeroHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCom
 				UEqZeroInputComponent* EqZeroIC = Cast<UEqZeroInputComponent>(PlayerInputComponent);
 				if (ensureMsgf(EqZeroIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UEqZeroInputComponent or a subclass of it.")))
 				{
-                    // mapping
+                    // mapping 目前没用
 					EqZeroIC->AddInputMappings(InputConfig, Subsystem);
 
                     // 技能输入

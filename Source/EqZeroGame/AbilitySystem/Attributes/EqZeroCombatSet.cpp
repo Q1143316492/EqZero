@@ -11,7 +11,7 @@ class FLifetimeProperty;
 
 
 UEqZeroCombatSet::UEqZeroCombatSet()
-	: BaseDamage(0.0f)
+	: BaseDamage(6.0f)
 	, BaseHeal(0.0f)
 {
 }

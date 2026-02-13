@@ -77,12 +77,11 @@ void UEqZeroHealthComponent::InitializeWithAbilitySystem(UEqZeroAbilitySystemCom
 		return;
 	}
 
-	// Register to listen for attribute changes.
 	HealthSet->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
 	HealthSet->OnMaxHealthChanged.AddUObject(this, &ThisClass::HandleMaxHealthChanged);
 	HealthSet->OnOutOfHealth.AddUObject(this, &ThisClass::HandleOutOfHealth);
 
-	// TEMP: Reset attributes to default values.  Eventually this will be driven by a spread sheet.
+	// 设置属性为默认值，都是最终应该是配表
 	AbilitySystemComponent->SetNumericAttributeBase(UEqZeroHealthSet::GetHealthAttribute(), HealthSet->GetMaxHealth());
 
 	ClearGameplayTags();
@@ -140,6 +139,8 @@ float UEqZeroHealthComponent::GetHealthNormalized() const
 
 void UEqZeroHealthComponent::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue)
 {
+	UE_LOG(LogEqZero, Log, TEXT("EqZeroHealthComponent: Health changed for owner [%s] from [%f] to [%f] (instigator: [%s], causer: [%s], magnitude: [%f])."), *GetNameSafe(GetOwner()), OldValue, NewValue, *GetNameSafe(DamageInstigator), *GetNameSafe(DamageCauser), DamageMagnitude);
+	
 	OnHealthChanged.Broadcast(this, OldValue, NewValue, DamageInstigator);
 }
 
@@ -153,7 +154,7 @@ void UEqZeroHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor*
 #if WITH_SERVER_CODE
 	if (AbilitySystemComponent && DamageEffectSpec)
 	{
-		// Send the "GameplayEvent.Death" gameplay event through the owner's ability system.  This can be used to trigger a death gameplay ability.
+		// 发送 "GameplayEvent.Death" 这个事件会触发死亡技能
 		{
 			FGameplayEventData Payload;
 			Payload.EventTag = EqZeroGameplayTags::GameplayEvent_Death;
@@ -169,22 +170,21 @@ void UEqZeroHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor*
 			AbilitySystemComponent->HandleGameplayEvent(Payload.EventTag, &Payload);
 		}
 
-		// Send a standardized verb message that other systems can observe
 		{
+			/*
+			 * 官方写的待办
+			 * 填写上下文标签，以及任何非能力系统的来源 / 发起者标签
+			 * 判断这是敌方击杀、自我失误击杀、队友击杀等等……
+			 */
 			FEqZeroVerbMessage Message;
 			Message.Verb = TAG_EqZero_Elimination_Message;
 			Message.Instigator = DamageInstigator;
 			Message.InstigatorTags = *DamageEffectSpec->CapturedSourceTags.GetAggregatedTags();
 			Message.Target = UEqZeroVerbMessageHelpers::GetPlayerStateFromObject(AbilitySystemComponent->GetAvatarActor());
 			Message.TargetTags = *DamageEffectSpec->CapturedTargetTags.GetAggregatedTags();
-			//@TODO: Fill out context tags, and any non-ability-system source/instigator tags
-			//@TODO: Determine if it's an opposing team kill, self-own, team kill, etc...
-
 			UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 			MessageSystem.BroadcastMessage(Message.Verb, Message);
 		}
-
-		//@TODO: assist messages (could compute from damage dealt elsewhere)?
 	}
 
 #endif // #if WITH_SERVER_CODE
@@ -194,12 +194,11 @@ void UEqZeroHealthComponent::OnRep_DeathState(EEqZeroDeathState OldDeathState)
 {
 	const EEqZeroDeathState NewDeathState = DeathState;
 
-	// Revert the death state for now since we rely on StartDeath and FinishDeath to change it.
 	DeathState = OldDeathState;
 
 	if (OldDeathState > NewDeathState)
 	{
-		// The server is trying to set us back but we've already predicted past the server state.
+		// 服务器正试图让我们倒退，但我们已经预测到了服务器状态之后的情况。
 		UE_LOG(LogEqZero, Warning, TEXT("EqZeroHealthComponent: Predicted past server death state [%d] -> [%d] for owner [%s]."), (uint8)OldDeathState, (uint8)NewDeathState, *GetNameSafe(GetOwner()));
 		return;
 	}
@@ -283,6 +282,7 @@ void UEqZeroHealthComponent::DamageSelfDestruct(bool bFellOutOfWorld)
 {
 	if ((DeathState == EEqZeroDeathState::NotDead) && AbilitySystemComponent)
 	{
+		// TODO 这里GameData还没有配置
 		const TSubclassOf<UGameplayEffect> DamageGE = UEqZeroAssetManager::GetSubclass(UEqZeroGameData::Get().DamageGameplayEffect_SetByCaller);
 		if (!DamageGE)
 		{

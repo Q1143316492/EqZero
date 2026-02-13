@@ -389,43 +389,49 @@ void AEqZeroPlayerController::UpdateHiddenComponents(const FVector& ViewLocation
 {
 	Super::UpdateHiddenComponents(ViewLocation, OutHiddenComponents);
 
-	if (bHideViewTargetPawnNextFrame)
+	if (!bHideViewTargetPawnNextFrame)
 	{
-		AActor* const ViewTargetPawn = PlayerCameraManager ? Cast<AActor>(PlayerCameraManager->GetViewTarget()) : nullptr;
-		if (ViewTargetPawn)
-		{
-			// internal helper func to hide all the components
-			auto AddToHiddenComponents = [&OutHiddenComponents](const TInlineComponentArray<UPrimitiveComponent*>& InComponents)
-			{
-				// add every component and all attached children
-				for (UPrimitiveComponent* Comp : InComponents)
-				{
-					if (Comp->IsRegistered())
-					{
-						OutHiddenComponents.Add(Comp->GetPrimitiveSceneId());
-
-						for (USceneComponent* AttachedChild : Comp->GetAttachChildren())
-						{
-							static FName NAME_NoParentAutoHide(TEXT("NoParentAutoHide"));
-							UPrimitiveComponent* AttachChildPC = Cast<UPrimitiveComponent>(AttachedChild);
-							if (AttachChildPC && AttachChildPC->IsRegistered() && !AttachChildPC->ComponentTags.Contains(NAME_NoParentAutoHide))
-							{
-								OutHiddenComponents.Add(AttachChildPC->GetPrimitiveSceneId());
-							}
-						}
-					}
-				}
-			};
-
-			// hide pawn's components
-			TInlineComponentArray<UPrimitiveComponent*> PawnComponents;
-			ViewTargetPawn->GetComponents(PawnComponents);
-			AddToHiddenComponents(PawnComponents);
-		}
-
-		// we consumed it, reset for next frame
-		bHideViewTargetPawnNextFrame = false;
+		return;
 	}
+
+	AActor* const ViewTargetPawn = PlayerCameraManager ? Cast<AActor>(PlayerCameraManager->GetViewTarget()) : nullptr;
+	if (!ViewTargetPawn)
+	{
+		return;
+	}
+	
+	// 隐藏所有组件的内部辅助函数
+	auto AddToHiddenComponents = [&OutHiddenComponents](const TInlineComponentArray<UPrimitiveComponent*>& InComponents)
+	{
+		// 添加每个组件以及所有附带的子组件
+		for (UPrimitiveComponent* Comp : InComponents)
+		{
+			if (!Comp->IsRegistered())
+			{
+				continue;
+			}
+			
+			OutHiddenComponents.Add(Comp->GetPrimitiveSceneId());
+			
+			for (USceneComponent* AttachedChild : Comp->GetAttachChildren())
+			{
+				static FName NAME_NoParentAutoHide(TEXT("NoParentAutoHide"));
+				UPrimitiveComponent* AttachChildPC = Cast<UPrimitiveComponent>(AttachedChild);
+				if (AttachChildPC && AttachChildPC->IsRegistered() && !AttachChildPC->ComponentTags.Contains(NAME_NoParentAutoHide))
+				{
+					OutHiddenComponents.Add(AttachChildPC->GetPrimitiveSceneId());
+				}
+			}
+		}
+	};
+
+	// 隐藏pawn组件
+	TInlineComponentArray<UPrimitiveComponent*> PawnComponents;
+	ViewTargetPawn->GetComponents(PawnComponents);
+	AddToHiddenComponents(PawnComponents);
+
+	bHideViewTargetPawnNextFrame = false;
+
 }
 
 void AEqZeroPlayerController::OnUnPossess()
