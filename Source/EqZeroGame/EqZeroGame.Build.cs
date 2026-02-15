@@ -48,7 +48,9 @@ public class EqZeroGame : ModuleRules
 				"ControlFlows",
 				"PropertyPath",
 				"EnhancedInput",
-				"InputCore"
+				"InputCore",
+				"NetCore",
+				"GameplayMessageRuntime",
 			}
 		);
 

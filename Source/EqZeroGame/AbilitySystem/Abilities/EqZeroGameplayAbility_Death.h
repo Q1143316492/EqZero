@@ -44,7 +44,7 @@ protected:
 	TSubclassOf<UEqZeroCameraMode> DeathCameraModeClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EqZeroDeath")
-	float DeathDuration = 9.f;
+	float DeathDuration = 8.f;
 	
 	// 如果启用，该能力将自动调用 StartDeath。如果死亡已启动，那么当该能力结束时，FinishDeath 总会被调用。
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EqZeroDeath")
