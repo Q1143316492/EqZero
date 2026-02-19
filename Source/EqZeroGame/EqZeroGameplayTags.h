@@ -64,4 +64,11 @@ namespace EqZeroGameplayTags
 	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Respawn_Completed_Message);
 
 	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Type_StatusChange_Death);
+
+	// Event.Movement tags used by animation
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_ADS);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_WeaponFire);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Reload);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Dash);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Melee);
 };

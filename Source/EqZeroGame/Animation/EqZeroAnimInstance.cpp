@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EqZeroAnimInstance.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "Character/EqZeroCharacter.h"
 #include "Character/EqZeroCharacterMovementComponent.h"
@@ -31,6 +32,36 @@ void UEqZeroAnimInstance::InitializeWithAbilitySystem(UAbilitySystemComponent* A
 	check(ASC);
 
 	GameplayTagPropertyMap.Initialize(this, ASC);
+
+	ASC->RegisterGameplayTagEvent(EqZeroGameplayTags::Event_Movement_ADS, EGameplayTagEventType::NewOrRemoved)
+		.AddWeakLambda(this, [this](const FGameplayTag Tag, int32 NewCount)
+		{
+			GameplayTag_IsADS = NewCount > 0;
+		});
+
+	ASC->RegisterGameplayTagEvent(EqZeroGameplayTags::Event_Movement_WeaponFire, EGameplayTagEventType::NewOrRemoved)
+		.AddWeakLambda(this, [this](const FGameplayTag Tag, int32 NewCount)
+		{
+			GameplayTag_IsFiring = NewCount > 0;
+		});
+
+	ASC->RegisterGameplayTagEvent(EqZeroGameplayTags::Event_Movement_Reload, EGameplayTagEventType::NewOrRemoved)
+		.AddWeakLambda(this, [this](const FGameplayTag Tag, int32 NewCount)
+		{
+			GameplayTag_IsReloading = NewCount > 0;
+		});
+
+	ASC->RegisterGameplayTagEvent(EqZeroGameplayTags::Event_Movement_Dash, EGameplayTagEventType::NewOrRemoved)
+		.AddWeakLambda(this, [this](const FGameplayTag Tag, int32 NewCount)
+		{
+			GameplayTag_IsDashing = NewCount > 0;
+		});
+
+	ASC->RegisterGameplayTagEvent(EqZeroGameplayTags::Event_Movement_Melee, EGameplayTagEventType::NewOrRemoved)
+		.AddWeakLambda(this, [this](const FGameplayTag Tag, int32 NewCount)
+		{
+			GameplayTag_IsMelee = NewCount > 0;
+		});
 }
 
 #if WITH_EDITOR
@@ -396,7 +427,7 @@ void UEqZeroAnimInstance::SetRootYawOffset(float InRootYawOffset)
 		// 这东西是配置，就是不想等的，好像也不会有相等的情况，一直是走这里
 		RootYawOffset = UKismetMathLibrary::ClampAngle(NormalizedAngle, ClampRange.X, ClampRange.Y);
 	}
-	AimYaw = RootYawOffset;
+	AimYaw = RootYawOffset * -1.f;
 }
 
 void UEqZeroAnimInstance::ProcessTurnYawCurve()

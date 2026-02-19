@@ -62,6 +62,13 @@ namespace EqZeroGameplayTags
 	
 	// Ability.Type
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Type_StatusChange_Death, "Ability.Type.StatusChange.Death", "Status change ability tag for death.");
+
+	// Event.Movement tags used by animation
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_ADS, "Event.Movement.ADS", "Character is in ADS state.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_WeaponFire, "Event.Movement.WeaponFire", "Character is firing weapon.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Reload, "Event.Movement.Reload", "Character is reloading.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Dash, "Event.Movement.Dash", "Character is dashing.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Melee, "Event.Movement.Melee", "Character is performing melee.");
 	
 	// Unreal Movement Modes
 	const TMap<uint8, FGameplayTag> MovementModeTagMap =
