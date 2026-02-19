@@ -110,7 +110,7 @@ void UEqZeroDamageExecution::Execute_Implementation(const FGameplayEffectCustomE
 		UE_LOG(LogEqZeroAbilitySystem, Error, TEXT("Damage Calculation cannot deduce a source location for damage coming from %s; Falling back to WORLD_MAX dist!"), *GetPathNameSafe(Spec.Def));
 	}
 
-	// Apply ability source modifiers 物理衰减和距离衰减
+	// 物理衰减和距离衰减，这个值可能会变化，配置在武器上。
 	float PhysicalMaterialAttenuation = 1.0f;
 	float DistanceAttenuation = 1.0f;
 	if (const IEqZeroAbilitySourceInterface* AbilitySource = TypedContext->GetAbilitySource())

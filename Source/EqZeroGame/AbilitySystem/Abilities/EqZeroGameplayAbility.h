@@ -127,6 +127,12 @@ public:
 	 */
 	UE_API void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
 
+	/**
+	 * EndAbility 在基类中是 protected，此方法作为 public bridge 供外部调用。
+	 * 等价于 Blueprint 的 "End Ability" 节点（bWasCancelled=false）。
+	 */
+	UE_API void ForceEndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
+
 	/*
 	 * ActivationGroup 改变激活组
 	 * EEqZeroAbilityActivationGroup

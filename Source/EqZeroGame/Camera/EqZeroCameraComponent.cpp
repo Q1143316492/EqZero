@@ -119,6 +119,6 @@ void UEqZeroCameraComponent::DrawDebug(UCanvas* Canvas) const
 void UEqZeroCameraComponent::GetBlendInfo(float& OutWeightOfTopLayer, FGameplayTag& OutTagOfTopLayer) const
 {
 	check(CameraModeStack);
-	CameraModeStack->GetBlendInfo(/*out*/ OutWeightOfTopLayer, /*out*/ OutTagOfTopLayer);
+	CameraModeStack->GetBlendInfo(OutWeightOfTopLayer, OutTagOfTopLayer);
 }
 

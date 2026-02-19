@@ -144,7 +144,13 @@ void UEqZeroGameplayAbility_AutoRespawn::OnPlayerReset()
 
 		for (const FGameplayAbilitySpecHandle& Handle : OutAbilityHandles)
 		{
-			ASC->CancelAbilityHandle(Handle);
+			if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle))
+			{
+				if (UEqZeroGameplayAbility* AbilityInstance = Cast<UEqZeroGameplayAbility>(Spec->GetPrimaryInstance()))
+				{
+					AbilityInstance->ForceEndAbility(Handle, AbilityInstance->GetCurrentActorInfo(), AbilityInstance->GetCurrentActivationInfo(), true, false);
+				}
+			}
 		}
 	}
 

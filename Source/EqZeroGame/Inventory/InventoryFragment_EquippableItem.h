@@ -16,7 +16,7 @@ class UInventoryFragment_EquippableItem : public UEqZeroInventoryItemFragment
 	GENERATED_BODY()
 
 public:
-	// TODO 装备系统还没有
-	// UPROPERTY(EditAnywhere, Category=EqZero)
-	// TSubclassOf<UEqZeroEquipmentDefinition> EquipmentDefinition;
+	// 该道具对应的装备定义，穿戴时由 QuickBarComponent 读取
+	UPROPERTY(EditAnywhere, Category=EqZero)
+	TSubclassOf<UEqZeroEquipmentDefinition> EquipmentDefinition;
 };
