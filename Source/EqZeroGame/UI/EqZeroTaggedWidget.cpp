@@ -22,7 +22,7 @@ void UEqZeroTaggedWidget::NativeConstruct()
 
 		// Set our initial visibility value (checking the tags, etc...)
 		SetVisibility(GetVisibility());
-		BP_OnActivated();
+		TaggedOnActivated();
 	}
 }
 
@@ -31,7 +31,7 @@ void UEqZeroTaggedWidget::NativeDestruct()
 	if (!IsDesignTime())
 	{
 		//@TODO: Stop listening for tag changes
-		BP_OnDeactivated();
+		TaggedOnDeactivated();
 	}
 
 	Super::NativeDestruct();

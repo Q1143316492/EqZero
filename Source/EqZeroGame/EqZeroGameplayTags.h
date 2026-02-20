@@ -71,4 +71,12 @@ namespace EqZeroGameplayTags
 	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Reload);
 	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Dash);
 	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Movement_Melee);
+
+	// Lyra.ShooterGame.Weapon.MagazineAmmo
+	// Lyra.ShooterGame.Weapon.MagazineSize
+	// Lyra.ShooterGame.Weapon.SpareAmmo
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lyra_Weapon_MagazineAmmo);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lyra_Weapon_MagazineSize);
+	EQZEROGAME_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lyra_Weapon_SpareAmmo);
+	
 };

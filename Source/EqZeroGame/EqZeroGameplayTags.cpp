@@ -69,6 +69,11 @@ namespace EqZeroGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Reload, "Event.Movement.Reload", "Character is reloading.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Dash, "Event.Movement.Dash", "Character is dashing.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Melee, "Event.Movement.Melee", "Character is performing melee.");
+
+	// Lyra.ShooterGame.Weapon.
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lyra_Weapon_MagazineAmmo, "Lyra.ShooterGame.Weapon.MagazineAmmo", "Tag used to track current ammo in magazine for shooter game.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lyra_Weapon_MagazineSize, "Lyra.ShooterGame.Weapon.MagazineSize", "Tag used to track magazine size for shooter game.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lyra_Weapon_SpareAmmo, "Lyra.ShooterGame.Weapon.SpareAmmo", "Tag used to track spare ammo for shooter game.");
 	
 	// Unreal Movement Modes
 	const TMap<uint8, FGameplayTag> MovementModeTagMap =
