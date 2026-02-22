@@ -365,26 +365,38 @@ void UEqZeroAbilitySystemComponent::ApplyAbilityBlockAndCancelTags(const FGamepl
 	FGameplayTagContainer ModifiedBlockTags = BlockTags;
 	FGameplayTagContainer ModifiedCancelTags = CancelTags;
 
+	/*
+	 * 技能激活 → GAS 调用 ApplyAbilityBlockAndCancelTags
+	 * → TagRelationshipMapping->GetAbilityTagsToBlockAndCancel() 追加 Block/Cancel tag
+	 * → Super::ApplyAbilityBlockAndCancelTags 执行实际的阻塞/取消
+	 */
+	
 	if (TagRelationshipMapping)
 	{
-		// Use the mapping to expand the ability tags into block and cancel tag
 		TagRelationshipMapping->GetAbilityTagsToBlockAndCancel(AbilityTags, &ModifiedBlockTags, &ModifiedCancelTags);
 	}
 
 	Super::ApplyAbilityBlockAndCancelTags(AbilityTags, RequestingAbility, bEnableBlockTags, ModifiedBlockTags, bExecuteCancelTags, ModifiedCancelTags);
 
-	//@TODO: Apply any special logic like blocking input or movement
+	// 这里可以添加一些额外的逻辑，例如阻塞输入和移动
 }
 
 void UEqZeroAbilitySystemComponent::HandleChangeAbilityCanBeCanceled(const FGameplayTagContainer& AbilityTags, UGameplayAbility* RequestingAbility, bool bCanBeCanceled)
 {
 	Super::HandleChangeAbilityCanBeCanceled(AbilityTags, RequestingAbility, bCanBeCanceled);
 
-	//@TODO: Apply any special logic like blocking input or movement
+	// 应用任何特殊逻辑，如阻止输入或移动
 }
 
 void UEqZeroAbilitySystemComponent::GetAdditionalActivationTagRequirements(const FGameplayTagContainer& AbilityTags, FGameplayTagContainer& OutActivationRequired, FGameplayTagContainer& OutActivationBlocked) const
 {
+	/*
+	* 技能尝试激活 → GAS 调用 CanActivateAbility
+	* → GetAdditionalActivationTagRequirements
+	* → TagRelationshipMapping->GetRequiredAndBlockedActivationTags() 追加条件
+	* → GAS 用这些 tag 做最终的标签门控检查
+	*/
+
 	if (TagRelationshipMapping)
 	{
 		TagRelationshipMapping->GetRequiredAndBlockedActivationTags(AbilityTags, &OutActivationRequired, &OutActivationBlocked);

@@ -48,6 +48,8 @@ namespace EqZeroGameplayTags
 	EQZEROGAME_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dying);
 	EQZEROGAME_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dead);
 
+	EQZEROGAME_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Gameplay_Message_ADS);
+
 	// These are mappings from MovementMode enums to GameplayTags associated with those enums (below)
 	EQZEROGAME_API	extern const TMap<uint8, FGameplayTag> MovementModeTagMap;
 	EQZEROGAME_API	extern const TMap<uint8, FGameplayTag> CustomMovementModeTagMap;

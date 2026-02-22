@@ -531,6 +531,7 @@ void UEqZeroGameplayAbility_RangedWeapon::EndAbility(const FGameplayAbilitySpecH
 		check(MyAbilityComponent);
 
 		// 能力结束时，消耗目标数据并移除委托
+		// 操作的是 ASC 的 这个 FGameplayAbilityReplicatedDataContainer AbilityTargetDataMap;
 		MyAbilityComponent->AbilityTargetDataSetDelegate(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey()).Remove(OnTargetDataReadyCallbackDelegateHandle);
 		MyAbilityComponent->ConsumeClientReplicatedTargetData(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey());
 
@@ -551,7 +552,7 @@ void UEqZeroGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGamep
 		// 移动语义获取数据，避免拷贝。获取目标数据的所有权，以确保不会有游戏代码的回调在我们不知情的情况下使数据失效。
 		FGameplayAbilityTargetDataHandle LocalTargetDataHandle(MoveTemp(const_cast<FGameplayAbilityTargetDataHandle&>(InData)));
 
-		// 如果是客户端，必须调用这个函数
+		// 如果是客户端，必须调用这个函数 (本地控制，但是又不权威。我们只讨论DS客户端，他这里排除了单机模式和ListenServer的玩家1)
 		if (const bool bShouldNotifyServer = CurrentActorInfo->IsLocallyControlled() && !CurrentActorInfo->IsNetAuthority())
 		{
 			MyAbilityComponent->CallServerSetReplicatedTargetData(CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey(), LocalTargetDataHandle, ApplicationTag, MyAbilityComponent->ScopedPredictionKey);
@@ -576,6 +577,7 @@ void UEqZeroGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGamep
 						{
 							if (const FEqZeroGameplayAbilityTargetData_SingleTargetHit* SingleTargetHit = static_cast<const FEqZeroGameplayAbilityTargetData_SingleTargetHit*>(LocalTargetDataHandle.Get(i)))
 							{
+								// 这里是一个扩展流程，服务器直接认可客户端的结果是有效的
 								if (SingleTargetHit->bHitReplaced)
 								{
 									HitReplaces.Add(i);

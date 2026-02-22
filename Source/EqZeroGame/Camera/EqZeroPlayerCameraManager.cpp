@@ -39,4 +39,19 @@ void AEqZeroPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float Del
 void AEqZeroPlayerCameraManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
 {
 	check(Canvas);
+
+	FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
+
+	DisplayDebugManager.SetFont(GEngine->GetSmallFont());
+	DisplayDebugManager.SetDrawColor(FColor::Yellow);
+	DisplayDebugManager.DrawString(FString::Printf(TEXT("EqZeroPlayerCameraManager: %s"), *GetNameSafe(this)));
+
+	Super::DisplayDebug(Canvas, DebugDisplay, YL, YPos);
+
+	const APawn* Pawn = (PCOwner ? PCOwner->GetPawn() : nullptr);
+
+	if (const UEqZeroCameraComponent* CameraComponent = UEqZeroCameraComponent::FindCameraComponent(Pawn))
+	{
+		CameraComponent->DrawDebug(Canvas);
+	}
 }
