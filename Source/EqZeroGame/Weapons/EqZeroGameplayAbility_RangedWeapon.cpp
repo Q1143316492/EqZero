@@ -15,6 +15,11 @@
 
 namespace EqZeroConsoleVariables
 {
+	/**
+	 * EqZero.Weapon.DrawBulletTraceDuration 5.0 — 画出子弹飞行轨迹（红线），持续 5 秒
+		EqZero.Weapon.DrawBulletHitDuration 5.0 — 画出命中点（红点），持续 5 秒
+		EqZero.Weapon.DrawBulletHitRadius 10.0 — 调整命中点的显示半径（默认 3.0 uu，可以调大方便观察）
+	 */
 	static float DrawBulletTracesDuration = 0.0f;
 	static FAutoConsoleVariableRef CVarDrawBulletTraceDuraton(
 		TEXT("EqZero.Weapon.DrawBulletTraceDuration"),
