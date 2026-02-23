@@ -225,6 +225,7 @@ protected:
 
 	/*
 	 * 当前技能的花费, 我们自己定义的结构,并在CanActivateAbility中进行检查, 在ActivateAbility中进行扣除
+	 * 重写 CheckCost 和 ApplyCost
 	 */
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Costs)
 	TArray<TObjectPtr<UEqZeroAbilityCost>> AdditionalCosts;

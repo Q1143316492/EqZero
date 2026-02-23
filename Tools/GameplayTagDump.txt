@@ -1,0 +1,781 @@
+================================================================================
+  EqZero Gameplay Tag Dump
+  Generated : 2026-02-23 17:32:42
+  Total tags: 208
+================================================================================
+
+--- TAG TREE -------------------------------------------------------------------
+
+|-- Ability
+|   |-- ActivateFail
+|   |   |-- ActivationGroup  // Ability failed to activate because of its activation group.
+|   |   |-- Cooldown  // Ability failed to activate because it is on cool down.
+|   |   |-- Cost  // Ability failed to activate because it did not pass the cost checks.
+|   |   |-- IsDead  // Ability failed to activate because its owner is dead.
+|   |   |-- MagazineFull
+|   |   |-- Networking  // Ability failed to activate because it did not pass the network checks.
+|   |   |-- NoSpareAmmo
+|   |   |-- TagsBlocked  // Ability failed to activate because tags are blocking it.
+|   |   +-- TagsMissing  // Ability failed to activate because tags are missing.
+|   |-- Behavior
+|   |   +-- SurvivesDeath  // An ability with this type tag should not be canceled due to death.
+|   |-- Dash
+|   |   +-- Duration
+|   |       +-- Message  // Dash Cooldown Duration
+|   |-- Grenade
+|   |   +-- Duration
+|   |       +-- Message  // Cooldown Grenade
+|   |-- Interaction
+|   |   |-- Activate
+|   |   +-- Duration
+|   |       +-- Message
+|   |-- PlayMontageOnActivateFail
+|   |   +-- Message
+|   |-- Respawn
+|   |   |-- Completed
+|   |   |   +-- Message  // Message tag broadcast when a respawn process is completed.
+|   |   +-- Duration
+|   |       +-- Message  // Message containing the duration until respawn.
+|   |-- Type  // Applied to Gameplay Abilities to indicate a functional category
+|   |   |-- Action  // Action type abilities cause the avatar to perform an action in the game world, possibly involving equipment such as a weapon
+|   |   |   |-- ADS
+|   |   |   |-- Dash
+|   |   |   |-- Drop
+|   |   |   |-- Emote
+|   |   |   |-- Grenade
+|   |   |   |-- Jump
+|   |   |   |-- Melee
+|   |   |   |-- Reload
+|   |   |   +-- WeaponFire
+|   |   |-- Info  // Info abilities are used to summon information for the players, and do not directly affect gameplay
+|   |   |   +-- ShowLeaderboard
+|   |   |-- Passive  // Passive abilities are always active on the owner
+|   |   |   |-- AutoReload  // Polls for active weapon to be empty, triggers reload input if enough time has elapsed
+|   |   |   |-- AutoRespawn  // Passive ability that listens for a player\'s pawn to die or otherwise be removed from play, and automatically respawns.
+|   |   |   +-- ChangeQuickbarSlot  // Handles requests for any type of slot change, whether directly indexed or cycling forward/backward
+|   |   +-- StatusChange  // Abilities of this type are used when a status if imposed on the avatar or owner, such as death or spawning
+|   |       |-- Death  // Covers the transition period when health goes to 0 until the avatar is removed from the world
+|   |       +-- Spawning  // Covers the time when a new hero is created, spawning into the world, and when it\'s actively controllable
+|   +-- UserFacingSimpleActivateFail
+|       +-- Message
+|-- Cheat
+|   |-- GodMode  // GodMode cheat is active on the owner.
+|   +-- UnlimitedHealth  // UnlimitedHealth cheat is active on the owner.
+|-- Cosmetic
+|   |-- AnimationStyle
+|   |   |-- Feminine
+|   |   +-- Masculine
+|   +-- BodyStyle
+|       +-- Medium
+|-- EqZero
+|   |-- Anim
+|   |   +-- Debug  // Debug messages from Animation Instance.
+|   +-- Damage
+|       +-- Message
+|-- Event
+|   +-- Movement
+|       |-- ADS  // Character is in ADS state.
+|       |-- Dash  // Character is dashing.
+|       |-- Melee  // Character is performing melee.
+|       |-- Reload  // Character is reloading.
+|       +-- WeaponFire  // Character is firing weapon.
+|-- Gameplay
+|   |-- AbilityInputBlocked
+|   |-- Damage
+|   |   |-- FellOutOfWorld
+|   |   +-- SelfDestruct
+|   |-- DamageImmunity
+|   |-- Message
+|   |   |-- ADS  // Message to UI, Reticle
+|   |   +-- Nameplate
+|   |       |-- Add  // Register Nameplate Source
+|   |       |-- Discover  // Looking for nameplates
+|   |       +-- Remove  // Unregister Nameplate Source
+|   |-- MovementStopped
+|   +-- Zone
+|       +-- WeakSpot
+|-- GameplayCue
+|   |-- Character
+|   |   |-- DamageTaken
+|   |   |-- Dash
+|   |   |   +-- Cooldown  // Cooldown for character dash
+|   |   |-- Death
+|   |   |-- Heal
+|   |   |-- Melee
+|   |   |   +-- Cooldown
+|   |   +-- Spawn  // At spawning of the player in shooter game
+|   |-- ShooterGame
+|   |   |-- Interact
+|   |   |   |-- Collect
+|   |   |   +-- WeaponPickup  // GCN for weapon pick FX attached to pawn
+|   |   +-- UserMessage
+|   |       |-- MatchDecided
+|   |       +-- WaitingForPlayers
+|   |-- Test
+|   |   |-- Burst
+|   |   |-- BurstLatent
+|   |   +-- Looping
+|   |-- Weapon
+|   |   |-- Grenade
+|   |   |   |-- Cooldown
+|   |   |   +-- Detonate  // Grenade Explosion
+|   |   |-- Melee
+|   |   |   |-- Hit  // hit melee CS, placed on default as the GCN is there -needs to move to Shooter
+|   |   |   +-- Impact  // Cue triggering on target when hit by a melee attack
+|   |   |-- Pistol
+|   |   |   +-- Fire
+|   |   |-- Rifle
+|   |   |   |-- Fire
+|   |   |   +-- Impact
+|   |   +-- Shotgun
+|   |       +-- Fire
+|   +-- World
+|       |-- Launcher
+|       |   +-- Activate  // Fires when Launcher (Up or Forward) activates
+|       +-- Teleporter
+|           +-- Activate  // Triggered when teleporter is activated
+|-- GameplayEffect
+|   |-- DamageTrait
+|   |   |-- Instant
+|   |   +-- Periodic
+|   |-- DamageType
+|   |   |-- Basic
+|   |   |-- Grenade  // Damage effect coming from a grenade explosion
+|   |   |-- Melee  // Damage effect coming from a melee strike
+|   |   |-- Pistol  // Damage effect coming from a pistol bullet
+|   |   |-- Rifle  // Damage effect coming from a rifle bullet
+|   |   +-- Shotgun  // Damage effect coming from shotgun pellets
+|   +-- Heal
+|       |-- Instant
+|       +-- Periodic
+|-- GameplayEvent
+|   |-- Death  // Event that fires on death. This event only fires on the server.
+|   |-- MeleeHit
+|   |-- ReloadDone
+|   |-- RequestReset  // Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.
+|   +-- Reset  // Event that fires once a player reset is executed.
+|-- GameSettings
+|   +-- Action
+|       +-- EditSafeZone
+|-- HUD
+|   +-- Slot
+|       |-- Debug
+|       |   +-- AnimValue
+|       |-- EliminationFeed
+|       |-- Equipment
+|       |-- ExtraEquipment
+|       |-- InfrequentAbilities
+|       |-- LeftSideTouchInputs
+|       |-- LeftSideTouchRegion
+|       |-- ModeStatus
+|       |-- PerfStats
+|       |   |-- Graph
+|       |   +-- Text
+|       |-- RespawnTimer
+|       |-- Reticle
+|       |-- RightSideTouchInputs
+|       |-- RightSideTouchRegion
+|       |-- TeamScore
+|       +-- TopAccolades
+|-- InitState
+|   |-- DataAvailable  // 2: All required data has been loaded/replicated and is ready for initialization
+|   |-- DataInitialized  // 3: The available data has been initialized for this actor/component, but it is not ready for full gameplay
+|   |-- GameplayReady  // 4: The actor/component is fully ready for active gameplay
+|   +-- Spawned  // 1: Actor/component has initially spawned and can be extended
+|-- InputTag
+|   |-- Ability
+|   |   |-- Dash
+|   |   |-- Emote
+|   |   |-- Heal
+|   |   |-- Interact
+|   |   |-- Melee  // Melee Input
+|   |   |-- Quickslot
+|   |   |   |-- CycleBackward
+|   |   |   |-- CycleForward
+|   |   |   |-- Drop
+|   |   |   +-- SelectSlot  // Used to directly select one of the quickbar slots. Intended to be accompanied with a 0-based slot index.
+|   |   |-- ShowLeaderboard
+|   |   |-- ToggleInventory
+|   |   |-- ToggleMap
+|   |   +-- ToggleMarkerInWorld
+|   |-- AutoRun  // Auto-run input.
+|   |-- Crouch  // Crouch input.
+|   |-- Jump
+|   |-- Look
+|   |   |-- Mouse  // Look (mouse) input.
+|   |   +-- Stick  // Look (stick) input.
+|   |-- Move  // Move input.
+|   +-- Weapon
+|       |-- ADS
+|       |-- Fire
+|       |-- FireAuto
+|       |-- Grenade
+|       +-- Reload
+|-- Lyra
+|   |-- AddNotification
+|   |   +-- KillFeed  // SendKillFeedInfo to UI
+|   |-- Damage
+|   |   +-- Taken
+|   |       +-- Message
+|   |-- HUD
+|   |   |-- PlayerHUD
+|   |   +-- TempTopWidgets
+|   |-- Player
+|   +-- ShooterGame
+|       |-- Accolade
+|       |   |-- EliminationChain
+|       |   |   |-- 2x
+|       |   |   |-- 3x
+|       |   |   |-- 4x
+|       |   |   +-- 5x
+|       |   +-- EliminationStreak
+|       |       |-- 10
+|       |       |-- 15
+|       |       |-- 20
+|       |       +-- 5
+|       |-- TDM
+|       |   +-- TeamScore
+|       +-- Weapon
+|           |-- MagazineAmmo  // Tag used to track current ammo in magazine for shooter game.
+|           |-- MagazineSize  // Tag used to track magazine size for shooter game.
+|           +-- SpareAmmo  // Tag used to track spare ammo for shooter game.
+|-- Movement
+|   +-- Mode
+|       |-- Custom  // This is invalid and should be replaced with custom tags.  See EqZeroGameplayTags::CustomMovementModeTagMap.
+|       |-- Falling  // Default Character movement tag
+|       |-- Flying  // Default Character movement tag
+|       |-- NavWalking  // Default Character movement tag
+|       |-- Swimming  // Default Character movement tag
+|       +-- Walking  // Default Character movement tag
+|-- Platform
+|   +-- Trait
+|       |-- BinauralSettingControlledByOS
+|       |-- CanExitApplication  // Can we show a quit option to exit the application?
+|       |-- Input
+|       |   |-- HardwareCursor  // Does this platform use a hardware mouse cursor?
+|       |   |-- HasStrictControllerPairing  // True on platforms which will ignore input from devices not mapped to a user.
+|       |   |-- PrimarlyController
+|       |   |-- PrimarlyTouchScreen
+|       |   +-- SupportsMouseAndKeyboard
+|       |-- SupportsBackgroundAudio
+|       |-- SupportsChangingAudioOutputDevice
+|       +-- SupportsWindowedMode  // Can we switch between fullscreen and windowed modes?
+|-- SetByCaller
+|   |-- Damage  // SetByCaller tag used by damage gameplay effects.
+|   +-- Heal  // SetByCaller tag used by healing gameplay effects.
+|-- ShooterGame
+|   |-- ControlPoint
+|   |   |-- Captured
+|   |   |   +-- Message  // Fired when a control point has been captured by a team
+|   |   +-- TeamScore
+|   |-- ExtensionPoint
+|   |   +-- AbilityBar
+|   |-- GamePhase
+|   |   |-- MatchBeginCountdown  // When this tag is used in a gameplay message, an expected duration is included in the payload.
+|   |   |-- Playing
+|   |   |-- PostGame
+|   |   +-- Warmup
+|   +-- Score
+|       |-- Assists
+|       |-- ControlPointCapture
+|       |-- Deaths
+|       +-- Eliminations
+|-- Status
+|   |-- AutoRunning  // Target is auto-running.
+|   |-- Crouching  // Target is crouching.
+|   |-- Death  // Target has the death status.
+|   |   |-- Dead  // Target has finished the death process.
+|   |   +-- Dying  // Target has begun the death process.
+|   +-- SpawningIn  // Covers the time when the pawn is created until it is controlled and unlocked for play
+|-- Subtitle
+|   +-- TextColor
+|       |-- White
+|       +-- Yellow
+|-- TODO
+|   +-- GameModeDamageImmunity
++-- UI
+    |-- Action
+    |   +-- Back
+    +-- Layer
+        |-- Game
+        |-- GameMenu
+        |-- Menu
+        +-- Modal
+
+--- FLAT LIST (alphabetical) ---------------------------------------------------
+
+Ability.ActivateFail.ActivationGroup                   // Ability failed to activate because of its activation group.
+Ability.ActivateFail.Cooldown                          // Ability failed to activate because it is on cool down.
+Ability.ActivateFail.Cost                              // Ability failed to activate because it did not pass the cost checks.
+Ability.ActivateFail.IsDead                            // Ability failed to activate because its owner is dead.
+Ability.ActivateFail.MagazineFull                      
+Ability.ActivateFail.Networking                        // Ability failed to activate because it did not pass the network checks.
+Ability.ActivateFail.NoSpareAmmo                       
+Ability.ActivateFail.TagsBlocked                       // Ability failed to activate because tags are blocking it.
+Ability.ActivateFail.TagsMissing                       // Ability failed to activate because tags are missing.
+Ability.Behavior.SurvivesDeath                         // An ability with this type tag should not be canceled due to death.
+Ability.Dash.Duration.Message                          // Dash Cooldown Duration
+Ability.Grenade.Duration.Message                       // Cooldown Grenade
+Ability.Interaction.Activate                           
+Ability.Interaction.Duration.Message                   
+Ability.PlayMontageOnActivateFail.Message              
+Ability.Respawn.Completed.Message                      // Message tag broadcast when a respawn process is completed.
+Ability.Respawn.Duration.Message                       // Message containing the duration until respawn.
+Ability.Type                                           // Applied to Gameplay Abilities to indicate a functional category
+Ability.Type.Action                                    // Action type abilities cause the avatar to perform an action in the game world, possibly involving equipment such as a weapon
+Ability.Type.Action.ADS                                
+Ability.Type.Action.Dash                               
+Ability.Type.Action.Drop                               
+Ability.Type.Action.Emote                              
+Ability.Type.Action.Grenade                            
+Ability.Type.Action.Jump                               
+Ability.Type.Action.Melee                              
+Ability.Type.Action.Reload                             
+Ability.Type.Action.WeaponFire                         
+Ability.Type.Info                                      // Info abilities are used to summon information for the players, and do not directly affect gameplay
+Ability.Type.Info.ShowLeaderboard                      
+Ability.Type.Passive                                   // Passive abilities are always active on the owner
+Ability.Type.Passive.AutoReload                        // Polls for active weapon to be empty, triggers reload input if enough time has elapsed
+Ability.Type.Passive.AutoRespawn                       // Passive ability that listens for a player\'s pawn to die or otherwise be removed from play, and automatically respawns.
+Ability.Type.Passive.ChangeQuickbarSlot                // Handles requests for any type of slot change, whether directly indexed or cycling forward/backward
+Ability.Type.StatusChange                              // Abilities of this type are used when a status if imposed on the avatar or owner, such as death or spawning
+Ability.Type.StatusChange.Death                        // Covers the transition period when health goes to 0 until the avatar is removed from the world
+Ability.Type.StatusChange.Spawning                     // Covers the time when a new hero is created, spawning into the world, and when it\'s actively controllable
+Ability.UserFacingSimpleActivateFail.Message           
+Cheat.GodMode                                          // GodMode cheat is active on the owner.
+Cheat.UnlimitedHealth                                  // UnlimitedHealth cheat is active on the owner.
+Cosmetic                                               
+Cosmetic.AnimationStyle.Feminine                       
+Cosmetic.AnimationStyle.Masculine                      
+Cosmetic.BodyStyle.Medium                              
+EqZero.Anim.Debug                                      // Debug messages from Animation Instance.
+EqZero.Damage.Message                                  
+Event.Movement.ADS                                     // Character is in ADS state.
+Event.Movement.Dash                                    // Character is dashing.
+Event.Movement.Melee                                   // Character is performing melee.
+Event.Movement.Reload                                  // Character is reloading.
+Event.Movement.WeaponFire                              // Character is firing weapon.
+Gameplay.AbilityInputBlocked                           
+Gameplay.Damage                                        
+Gameplay.Damage.FellOutOfWorld                         
+Gameplay.Damage.SelfDestruct                           
+Gameplay.DamageImmunity                                
+Gameplay.Message.ADS                                   // Message to UI, Reticle
+Gameplay.Message.Nameplate.Add                         // Register Nameplate Source
+Gameplay.Message.Nameplate.Discover                    // Looking for nameplates
+Gameplay.Message.Nameplate.Remove                      // Unregister Nameplate Source
+Gameplay.MovementStopped                               
+Gameplay.Zone.WeakSpot                                 
+GameplayCue.Character.DamageTaken                      
+GameplayCue.Character.Dash                             
+GameplayCue.Character.Dash.Cooldown                    // Cooldown for character dash
+GameplayCue.Character.Death                            
+GameplayCue.Character.Heal                             
+GameplayCue.Character.Melee.Cooldown                   
+GameplayCue.Character.Spawn                            // At spawning of the player in shooter game
+GameplayCue.ShooterGame.Interact.Collect               
+GameplayCue.ShooterGame.Interact.WeaponPickup          // GCN for weapon pick FX attached to pawn
+GameplayCue.ShooterGame.UserMessage.MatchDecided       
+GameplayCue.ShooterGame.UserMessage.WaitingForPlayers  
+GameplayCue.Test.Burst                                 
+GameplayCue.Test.BurstLatent                           
+GameplayCue.Test.Looping                               
+GameplayCue.Weapon.Grenade.Cooldown                    
+GameplayCue.Weapon.Grenade.Detonate                    // Grenade Explosion
+GameplayCue.Weapon.Melee.Hit                           // hit melee CS, placed on default as the GCN is there -needs to move to Shooter
+GameplayCue.Weapon.Melee.Impact                        // Cue triggering on target when hit by a melee attack
+GameplayCue.Weapon.Pistol.Fire                         
+GameplayCue.Weapon.Rifle.Fire                          
+GameplayCue.Weapon.Rifle.Impact                        
+GameplayCue.Weapon.Shotgun.Fire                        
+GameplayCue.World.Launcher.Activate                    // Fires when Launcher (Up or Forward) activates
+GameplayCue.World.Teleporter.Activate                  // Triggered when teleporter is activated
+GameplayEffect.DamageTrait.Instant                     
+GameplayEffect.DamageTrait.Periodic                    
+GameplayEffect.DamageType.Basic                        
+GameplayEffect.DamageType.Grenade                      // Damage effect coming from a grenade explosion
+GameplayEffect.DamageType.Melee                        // Damage effect coming from a melee strike
+GameplayEffect.DamageType.Pistol                       // Damage effect coming from a pistol bullet
+GameplayEffect.DamageType.Rifle                        // Damage effect coming from a rifle bullet
+GameplayEffect.DamageType.Shotgun                      // Damage effect coming from shotgun pellets
+GameplayEffect.Heal.Instant                            
+GameplayEffect.Heal.Periodic                           
+GameplayEvent.Death                                    // Event that fires on death. This event only fires on the server.
+GameplayEvent.MeleeHit                                 
+GameplayEvent.ReloadDone                               
+GameplayEvent.RequestReset                             // Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.
+GameplayEvent.Reset                                    // Event that fires once a player reset is executed.
+GameSettings.Action.EditSafeZone                       
+HUD.Slot.Debug.AnimValue                               
+HUD.Slot.EliminationFeed                               
+HUD.Slot.Equipment                                     
+HUD.Slot.ExtraEquipment                                
+HUD.Slot.InfrequentAbilities                           
+HUD.Slot.LeftSideTouchInputs                           
+HUD.Slot.LeftSideTouchRegion                           
+HUD.Slot.ModeStatus                                    
+HUD.Slot.PerfStats.Graph                               
+HUD.Slot.PerfStats.Text                                
+HUD.Slot.RespawnTimer                                  
+HUD.Slot.Reticle                                       
+HUD.Slot.RightSideTouchInputs                          
+HUD.Slot.RightSideTouchRegion                          
+HUD.Slot.TeamScore                                     
+HUD.Slot.TopAccolades                                  
+InitState.DataAvailable                                // 2: All required data has been loaded/replicated and is ready for initialization
+InitState.DataInitialized                              // 3: The available data has been initialized for this actor/component, but it is not ready for full gameplay
+InitState.GameplayReady                                // 4: The actor/component is fully ready for active gameplay
+InitState.Spawned                                      // 1: Actor/component has initially spawned and can be extended
+InputTag.Ability.Dash                                  
+InputTag.Ability.Emote                                 
+InputTag.Ability.Heal                                  
+InputTag.Ability.Interact                              
+InputTag.Ability.Melee                                 // Melee Input
+InputTag.Ability.Quickslot.CycleBackward               
+InputTag.Ability.Quickslot.CycleForward                
+InputTag.Ability.Quickslot.Drop                        
+InputTag.Ability.Quickslot.SelectSlot                  // Used to directly select one of the quickbar slots. Intended to be accompanied with a 0-based slot index.
+InputTag.Ability.ShowLeaderboard                       
+InputTag.Ability.ToggleInventory                       
+InputTag.Ability.ToggleMap                             
+InputTag.Ability.ToggleMarkerInWorld                   
+InputTag.AutoRun                                       // Auto-run input.
+InputTag.Crouch                                        // Crouch input.
+InputTag.Jump                                          
+InputTag.Look.Mouse                                    // Look (mouse) input.
+InputTag.Look.Stick                                    // Look (stick) input.
+InputTag.Move                                          // Move input.
+InputTag.Weapon.ADS                                    
+InputTag.Weapon.Fire                                   
+InputTag.Weapon.FireAuto                               
+InputTag.Weapon.Grenade                                
+InputTag.Weapon.Reload                                 
+Lyra.AddNotification.KillFeed                          // SendKillFeedInfo to UI
+Lyra.Damage.Taken.Message                              
+Lyra.HUD.PlayerHUD                                     
+Lyra.HUD.TempTopWidgets                                
+Lyra.Player                                            
+Lyra.ShooterGame.Accolade.EliminationChain             
+Lyra.ShooterGame.Accolade.EliminationChain.2x          
+Lyra.ShooterGame.Accolade.EliminationChain.3x          
+Lyra.ShooterGame.Accolade.EliminationChain.4x          
+Lyra.ShooterGame.Accolade.EliminationChain.5x          
+Lyra.ShooterGame.Accolade.EliminationStreak            
+Lyra.ShooterGame.Accolade.EliminationStreak.10         
+Lyra.ShooterGame.Accolade.EliminationStreak.15         
+Lyra.ShooterGame.Accolade.EliminationStreak.20         
+Lyra.ShooterGame.Accolade.EliminationStreak.5          
+Lyra.ShooterGame.TDM.TeamScore                         
+Lyra.ShooterGame.Weapon.MagazineAmmo                   // Tag used to track current ammo in magazine for shooter game.
+Lyra.ShooterGame.Weapon.MagazineSize                   // Tag used to track magazine size for shooter game.
+Lyra.ShooterGame.Weapon.SpareAmmo                      // Tag used to track spare ammo for shooter game.
+Movement.Mode.Custom                                   // This is invalid and should be replaced with custom tags.  See EqZeroGameplayTags::CustomMovementModeTagMap.
+Movement.Mode.Falling                                  // Default Character movement tag
+Movement.Mode.Flying                                   // Default Character movement tag
+Movement.Mode.NavWalking                               // Default Character movement tag
+Movement.Mode.Swimming                                 // Default Character movement tag
+Movement.Mode.Walking                                  // Default Character movement tag
+Platform.Trait.BinauralSettingControlledByOS           
+Platform.Trait.CanExitApplication                      // Can we show a quit option to exit the application?
+Platform.Trait.Input.HardwareCursor                    // Does this platform use a hardware mouse cursor?
+Platform.Trait.Input.HasStrictControllerPairing        // True on platforms which will ignore input from devices not mapped to a user.
+Platform.Trait.Input.PrimarlyController                
+Platform.Trait.Input.PrimarlyTouchScreen               
+Platform.Trait.Input.SupportsMouseAndKeyboard          
+Platform.Trait.SupportsBackgroundAudio                 
+Platform.Trait.SupportsChangingAudioOutputDevice       
+Platform.Trait.SupportsWindowedMode                    // Can we switch between fullscreen and windowed modes?
+SetByCaller.Damage                                     // SetByCaller tag used by damage gameplay effects.
+SetByCaller.Heal                                       // SetByCaller tag used by healing gameplay effects.
+ShooterGame.ControlPoint.Captured.Message              // Fired when a control point has been captured by a team
+ShooterGame.ControlPoint.TeamScore                     
+ShooterGame.ExtensionPoint.AbilityBar                  
+ShooterGame.GamePhase.MatchBeginCountdown              // When this tag is used in a gameplay message, an expected duration is included in the payload.
+ShooterGame.GamePhase.Playing                          
+ShooterGame.GamePhase.PostGame                         
+ShooterGame.GamePhase.Warmup                           
+ShooterGame.Score.Assists                              
+ShooterGame.Score.ControlPointCapture                  
+ShooterGame.Score.Deaths                               
+ShooterGame.Score.Eliminations                         
+Status.AutoRunning                                     // Target is auto-running.
+Status.Crouching                                       // Target is crouching.
+Status.Death                                           // Target has the death status.
+Status.Death.Dead                                      // Target has finished the death process.
+Status.Death.Dying                                     // Target has begun the death process.
+Status.SpawningIn                                      // Covers the time when the pawn is created until it is controlled and unlocked for play
+Subtitle.TextColor.White                               
+Subtitle.TextColor.Yellow                              
+TODO.GameModeDamageImmunity                            
+UI.Action.Back                                         
+UI.Layer.Game                                          
+UI.Layer.GameMenu                                      
+UI.Layer.Menu                                          
+UI.Layer.Modal                                         
+
+--- GROUPED BY ROOT NAMESPACE --------------------------------------------------
+
+[[ Ability ]]  (38 tags)
+  Ability.ActivateFail.ActivationGroup  // Ability failed to activate because of its activation group.
+  Ability.ActivateFail.Cooldown  // Ability failed to activate because it is on cool down.
+  Ability.ActivateFail.Cost  // Ability failed to activate because it did not pass the cost checks.
+  Ability.ActivateFail.IsDead  // Ability failed to activate because its owner is dead.
+  Ability.ActivateFail.MagazineFull
+  Ability.ActivateFail.Networking  // Ability failed to activate because it did not pass the network checks.
+  Ability.ActivateFail.NoSpareAmmo
+  Ability.ActivateFail.TagsBlocked  // Ability failed to activate because tags are blocking it.
+  Ability.ActivateFail.TagsMissing  // Ability failed to activate because tags are missing.
+  Ability.Behavior.SurvivesDeath  // An ability with this type tag should not be canceled due to death.
+  Ability.Dash.Duration.Message  // Dash Cooldown Duration
+  Ability.Grenade.Duration.Message  // Cooldown Grenade
+  Ability.Interaction.Activate
+  Ability.Interaction.Duration.Message
+  Ability.PlayMontageOnActivateFail.Message
+  Ability.Respawn.Completed.Message  // Message tag broadcast when a respawn process is completed.
+  Ability.Respawn.Duration.Message  // Message containing the duration until respawn.
+  Ability.Type  // Applied to Gameplay Abilities to indicate a functional category
+  Ability.Type.Action  // Action type abilities cause the avatar to perform an action in the game world, possibly involving equipment such as a weapon
+  Ability.Type.Action.ADS
+  Ability.Type.Action.Dash
+  Ability.Type.Action.Drop
+  Ability.Type.Action.Emote
+  Ability.Type.Action.Grenade
+  Ability.Type.Action.Jump
+  Ability.Type.Action.Melee
+  Ability.Type.Action.Reload
+  Ability.Type.Action.WeaponFire
+  Ability.Type.Info  // Info abilities are used to summon information for the players, and do not directly affect gameplay
+  Ability.Type.Info.ShowLeaderboard
+  Ability.Type.Passive  // Passive abilities are always active on the owner
+  Ability.Type.Passive.AutoReload  // Polls for active weapon to be empty, triggers reload input if enough time has elapsed
+  Ability.Type.Passive.AutoRespawn  // Passive ability that listens for a player\'s pawn to die or otherwise be removed from play, and automatically respawns.
+  Ability.Type.Passive.ChangeQuickbarSlot  // Handles requests for any type of slot change, whether directly indexed or cycling forward/backward
+  Ability.Type.StatusChange  // Abilities of this type are used when a status if imposed on the avatar or owner, such as death or spawning
+  Ability.Type.StatusChange.Death  // Covers the transition period when health goes to 0 until the avatar is removed from the world
+  Ability.Type.StatusChange.Spawning  // Covers the time when a new hero is created, spawning into the world, and when it\'s actively controllable
+  Ability.UserFacingSimpleActivateFail.Message
+
+[[ Cheat ]]  (2 tags)
+  Cheat.GodMode  // GodMode cheat is active on the owner.
+  Cheat.UnlimitedHealth  // UnlimitedHealth cheat is active on the owner.
+
+[[ Cosmetic ]]  (4 tags)
+  Cosmetic
+  Cosmetic.AnimationStyle.Feminine
+  Cosmetic.AnimationStyle.Masculine
+  Cosmetic.BodyStyle.Medium
+
+[[ EqZero ]]  (2 tags)
+  EqZero.Anim.Debug  // Debug messages from Animation Instance.
+  EqZero.Damage.Message
+
+[[ Event ]]  (5 tags)
+  Event.Movement.ADS  // Character is in ADS state.
+  Event.Movement.Dash  // Character is dashing.
+  Event.Movement.Melee  // Character is performing melee.
+  Event.Movement.Reload  // Character is reloading.
+  Event.Movement.WeaponFire  // Character is firing weapon.
+
+[[ Gameplay ]]  (11 tags)
+  Gameplay.AbilityInputBlocked
+  Gameplay.Damage
+  Gameplay.Damage.FellOutOfWorld
+  Gameplay.Damage.SelfDestruct
+  Gameplay.DamageImmunity
+  Gameplay.Message.ADS  // Message to UI, Reticle
+  Gameplay.Message.Nameplate.Add  // Register Nameplate Source
+  Gameplay.Message.Nameplate.Discover  // Looking for nameplates
+  Gameplay.Message.Nameplate.Remove  // Unregister Nameplate Source
+  Gameplay.MovementStopped
+  Gameplay.Zone.WeakSpot
+
+[[ GameplayCue ]]  (24 tags)
+  GameplayCue.Character.DamageTaken
+  GameplayCue.Character.Dash
+  GameplayCue.Character.Dash.Cooldown  // Cooldown for character dash
+  GameplayCue.Character.Death
+  GameplayCue.Character.Heal
+  GameplayCue.Character.Melee.Cooldown
+  GameplayCue.Character.Spawn  // At spawning of the player in shooter game
+  GameplayCue.ShooterGame.Interact.Collect
+  GameplayCue.ShooterGame.Interact.WeaponPickup  // GCN for weapon pick FX attached to pawn
+  GameplayCue.ShooterGame.UserMessage.MatchDecided
+  GameplayCue.ShooterGame.UserMessage.WaitingForPlayers
+  GameplayCue.Test.Burst
+  GameplayCue.Test.BurstLatent
+  GameplayCue.Test.Looping
+  GameplayCue.Weapon.Grenade.Cooldown
+  GameplayCue.Weapon.Grenade.Detonate  // Grenade Explosion
+  GameplayCue.Weapon.Melee.Hit  // hit melee CS, placed on default as the GCN is there -needs to move to Shooter
+  GameplayCue.Weapon.Melee.Impact  // Cue triggering on target when hit by a melee attack
+  GameplayCue.Weapon.Pistol.Fire
+  GameplayCue.Weapon.Rifle.Fire
+  GameplayCue.Weapon.Rifle.Impact
+  GameplayCue.Weapon.Shotgun.Fire
+  GameplayCue.World.Launcher.Activate  // Fires when Launcher (Up or Forward) activates
+  GameplayCue.World.Teleporter.Activate  // Triggered when teleporter is activated
+
+[[ GameplayEffect ]]  (10 tags)
+  GameplayEffect.DamageTrait.Instant
+  GameplayEffect.DamageTrait.Periodic
+  GameplayEffect.DamageType.Basic
+  GameplayEffect.DamageType.Grenade  // Damage effect coming from a grenade explosion
+  GameplayEffect.DamageType.Melee  // Damage effect coming from a melee strike
+  GameplayEffect.DamageType.Pistol  // Damage effect coming from a pistol bullet
+  GameplayEffect.DamageType.Rifle  // Damage effect coming from a rifle bullet
+  GameplayEffect.DamageType.Shotgun  // Damage effect coming from shotgun pellets
+  GameplayEffect.Heal.Instant
+  GameplayEffect.Heal.Periodic
+
+[[ GameplayEvent ]]  (5 tags)
+  GameplayEvent.Death  // Event that fires on death. This event only fires on the server.
+  GameplayEvent.MeleeHit
+  GameplayEvent.ReloadDone
+  GameplayEvent.RequestReset  // Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.
+  GameplayEvent.Reset  // Event that fires once a player reset is executed.
+
+[[ GameSettings ]]  (1 tags)
+  GameSettings.Action.EditSafeZone
+
+[[ HUD ]]  (16 tags)
+  HUD.Slot.Debug.AnimValue
+  HUD.Slot.EliminationFeed
+  HUD.Slot.Equipment
+  HUD.Slot.ExtraEquipment
+  HUD.Slot.InfrequentAbilities
+  HUD.Slot.LeftSideTouchInputs
+  HUD.Slot.LeftSideTouchRegion
+  HUD.Slot.ModeStatus
+  HUD.Slot.PerfStats.Graph
+  HUD.Slot.PerfStats.Text
+  HUD.Slot.RespawnTimer
+  HUD.Slot.Reticle
+  HUD.Slot.RightSideTouchInputs
+  HUD.Slot.RightSideTouchRegion
+  HUD.Slot.TeamScore
+  HUD.Slot.TopAccolades
+
+[[ InitState ]]  (4 tags)
+  InitState.DataAvailable  // 2: All required data has been loaded/replicated and is ready for initialization
+  InitState.DataInitialized  // 3: The available data has been initialized for this actor/component, but it is not ready for full gameplay
+  InitState.GameplayReady  // 4: The actor/component is fully ready for active gameplay
+  InitState.Spawned  // 1: Actor/component has initially spawned and can be extended
+
+[[ InputTag ]]  (24 tags)
+  InputTag.Ability.Dash
+  InputTag.Ability.Emote
+  InputTag.Ability.Heal
+  InputTag.Ability.Interact
+  InputTag.Ability.Melee  // Melee Input
+  InputTag.Ability.Quickslot.CycleBackward
+  InputTag.Ability.Quickslot.CycleForward
+  InputTag.Ability.Quickslot.Drop
+  InputTag.Ability.Quickslot.SelectSlot  // Used to directly select one of the quickbar slots. Intended to be accompanied with a 0-based slot index.
+  InputTag.Ability.ShowLeaderboard
+  InputTag.Ability.ToggleInventory
+  InputTag.Ability.ToggleMap
+  InputTag.Ability.ToggleMarkerInWorld
+  InputTag.AutoRun  // Auto-run input.
+  InputTag.Crouch  // Crouch input.
+  InputTag.Jump
+  InputTag.Look.Mouse  // Look (mouse) input.
+  InputTag.Look.Stick  // Look (stick) input.
+  InputTag.Move  // Move input.
+  InputTag.Weapon.ADS
+  InputTag.Weapon.Fire
+  InputTag.Weapon.FireAuto
+  InputTag.Weapon.Grenade
+  InputTag.Weapon.Reload
+
+[[ Lyra ]]  (19 tags)
+  Lyra.AddNotification.KillFeed  // SendKillFeedInfo to UI
+  Lyra.Damage.Taken.Message
+  Lyra.HUD.PlayerHUD
+  Lyra.HUD.TempTopWidgets
+  Lyra.Player
+  Lyra.ShooterGame.Accolade.EliminationChain
+  Lyra.ShooterGame.Accolade.EliminationChain.2x
+  Lyra.ShooterGame.Accolade.EliminationChain.3x
+  Lyra.ShooterGame.Accolade.EliminationChain.4x
+  Lyra.ShooterGame.Accolade.EliminationChain.5x
+  Lyra.ShooterGame.Accolade.EliminationStreak
+  Lyra.ShooterGame.Accolade.EliminationStreak.10
+  Lyra.ShooterGame.Accolade.EliminationStreak.15
+  Lyra.ShooterGame.Accolade.EliminationStreak.20
+  Lyra.ShooterGame.Accolade.EliminationStreak.5
+  Lyra.ShooterGame.TDM.TeamScore
+  Lyra.ShooterGame.Weapon.MagazineAmmo  // Tag used to track current ammo in magazine for shooter game.
+  Lyra.ShooterGame.Weapon.MagazineSize  // Tag used to track magazine size for shooter game.
+  Lyra.ShooterGame.Weapon.SpareAmmo  // Tag used to track spare ammo for shooter game.
+
+[[ Movement ]]  (6 tags)
+  Movement.Mode.Custom  // This is invalid and should be replaced with custom tags.  See EqZeroGameplayTags::CustomMovementModeTagMap.
+  Movement.Mode.Falling  // Default Character movement tag
+  Movement.Mode.Flying  // Default Character movement tag
+  Movement.Mode.NavWalking  // Default Character movement tag
+  Movement.Mode.Swimming  // Default Character movement tag
+  Movement.Mode.Walking  // Default Character movement tag
+
+[[ Platform ]]  (10 tags)
+  Platform.Trait.BinauralSettingControlledByOS
+  Platform.Trait.CanExitApplication  // Can we show a quit option to exit the application?
+  Platform.Trait.Input.HardwareCursor  // Does this platform use a hardware mouse cursor?
+  Platform.Trait.Input.HasStrictControllerPairing  // True on platforms which will ignore input from devices not mapped to a user.
+  Platform.Trait.Input.PrimarlyController
+  Platform.Trait.Input.PrimarlyTouchScreen
+  Platform.Trait.Input.SupportsMouseAndKeyboard
+  Platform.Trait.SupportsBackgroundAudio
+  Platform.Trait.SupportsChangingAudioOutputDevice
+  Platform.Trait.SupportsWindowedMode  // Can we switch between fullscreen and windowed modes?
+
+[[ SetByCaller ]]  (2 tags)
+  SetByCaller.Damage  // SetByCaller tag used by damage gameplay effects.
+  SetByCaller.Heal  // SetByCaller tag used by healing gameplay effects.
+
+[[ ShooterGame ]]  (11 tags)
+  ShooterGame.ControlPoint.Captured.Message  // Fired when a control point has been captured by a team
+  ShooterGame.ControlPoint.TeamScore
+  ShooterGame.ExtensionPoint.AbilityBar
+  ShooterGame.GamePhase.MatchBeginCountdown  // When this tag is used in a gameplay message, an expected duration is included in the payload.
+  ShooterGame.GamePhase.Playing
+  ShooterGame.GamePhase.PostGame
+  ShooterGame.GamePhase.Warmup
+  ShooterGame.Score.Assists
+  ShooterGame.Score.ControlPointCapture
+  ShooterGame.Score.Deaths
+  ShooterGame.Score.Eliminations
+
+[[ Status ]]  (6 tags)
+  Status.AutoRunning  // Target is auto-running.
+  Status.Crouching  // Target is crouching.
+  Status.Death  // Target has the death status.
+  Status.Death.Dead  // Target has finished the death process.
+  Status.Death.Dying  // Target has begun the death process.
+  Status.SpawningIn  // Covers the time when the pawn is created until it is controlled and unlocked for play
+
+[[ Subtitle ]]  (2 tags)
+  Subtitle.TextColor.White
+  Subtitle.TextColor.Yellow
+
+[[ TODO ]]  (1 tags)
+  TODO.GameModeDamageImmunity
+
+[[ UI ]]  (5 tags)
+  UI.Action.Back
+  UI.Layer.Game
+  UI.Layer.GameMenu
+  UI.Layer.Menu
+  UI.Layer.Modal
+
+--- SOURCE FILE BREAKDOWN ------------------------------------------------------
+
+   100 tags  Config\DefaultGameplayTags.ini
+    60 tags  Plugins\GameFeatures\EqZeroCore\Config\Tags\ShooterCoreTags.ini
+    35 tags  Source\EqZeroGame\EqZeroGameplayTags.cpp
+     5 tags  Source\EqZeroGame\AbilitySystem\Attributes\EqZeroHealthSet.cpp
+     2 tags  Source\EqZeroGame\AbilitySystem\Abilities\EqZeroGameplayAbility.cpp
+     2 tags  Plugins\GameSubtitles\Config\Tags\PluginTags.ini
+     1 tags  Source\EqZeroGame\Interaction\Abilities\EqZeroGameplayAbility_Interact.cpp
+     1 tags  Source\EqZeroGame\AbilitySystem\Abilities\EqZeroAbilityCost_ItemTagStack.cpp
+     1 tags  Source\EqZeroGame\AbilitySystem\EqZeroAbilitySystemComponent.cpp
+     1 tags  Source\EqZeroGame\Character\EqZeroCharacterMovementComponent.cpp

@@ -39,29 +39,30 @@ struct FEqZeroAttributeSetGrant
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AssetBundles="Client,Server"))
 	TSoftClassPtr<UAttributeSet> AttributeSetType;
 
-	// Data table referent to initialize the attributes with, if any (can be left unset)
+	// 用于初始化属性的数据表引用（如有，可留空）
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AssetBundles="Client,Server"))
 	TSoftObjectPtr<UDataTable> InitializationData;
 };
 
+// 在 GameFeatureAction中配置的结构
 USTRUCT()
 struct FGameFeatureAbilitiesEntry
 {
 	GENERATED_BODY()
 
-	// The base actor class to add to
+	// 要添加的基础角色类
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TSoftClassPtr<AActor> ActorClass;
 
-	// List of abilities to grant to actors of the specified class
+	// 加某个技能
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<FEqZeroAbilityGrant> GrantedAbilities;
 
-	// List of attribute sets to grant to actors of the specified class 
+	// 加某个属性并且可以用DataTable初始化
 	UPROPERTY(EditAnywhere, Category="Attributes")
 	TArray<FEqZeroAttributeSetGrant> GrantedAttributes;
 
-	// List of ability sets to grant to actors of the specified class
+	// 技能集
 	UPROPERTY(EditAnywhere, Category="Attributes", meta=(AssetBundles="Client,Server"))
 	TArray<TSoftObjectPtr<const UEqZeroAbilitySet>> GrantedAbilitySets;
 };
@@ -121,7 +122,7 @@ private:
 	template<class ComponentType>
 	ComponentType* FindOrAddComponentForActor(AActor* Actor, const FGameFeatureAbilitiesEntry& AbilitiesEntry, FPerContextData& ActiveData)
 	{
-		//@TODO: Just find, no add?
+		// 只查找，不添加吗？
 		return Cast<ComponentType>(FindOrAddComponentForActor(ComponentType::StaticClass(), Actor, AbilitiesEntry, ActiveData));
 	}
 	UActorComponent* FindOrAddComponentForActor(UClass* ComponentType, AActor* Actor, const FGameFeatureAbilitiesEntry& AbilitiesEntry, FPerContextData& ActiveData);

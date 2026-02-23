@@ -144,9 +144,9 @@ void UEqZeroGameplayAbility_Dash::SelectDirectionalMontage(const FVector& Facing
 	DeltaRotation.Normalize(); // 规范化到 -180 到 180
 	
 	float YawDelta = DeltaRotation.Yaw;
-	float AbsYawDelta = FMath::Abs(YawDelta); // 类似蓝图的 ABS 节点
+	float AbsYawDelta = FMath::Abs(YawDelta);
 	
-	// 根据角度选择动画蒙太奇（遵循蓝图逻辑）
+	// 根据角度选择动画蒙太奇
 	if (AbsYawDelta < 45.0f)
 	{
 		// Forward: -45° to 45°

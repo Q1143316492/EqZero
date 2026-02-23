@@ -127,11 +127,11 @@ public:
 
 protected:
 
-	// GA
+	// GA + AbilityLevel + InputTag
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities", meta=(TitleProperty=Ability))
 	TArray<FEqZeroAbilitySet_GameplayAbility> GrantedGameplayAbilities;
 
-	// GE
+	// GE + EffectLevel
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects", meta=(TitleProperty=GameplayEffect))
 	TArray<FEqZeroAbilitySet_GameplayEffect> GrantedGameplayEffects;
 
