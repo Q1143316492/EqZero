@@ -1,9 +1,12 @@
 # EqZero
 
-学习了Lyra后的一个个人UE框架。加入了Puerts希望能少写一点蓝图。
+学习了Lyra后的一个个人UE框架。
 
 资产情况：
 
-Plugins: 应该不会动，如果跑不起来，把Lyra的Plugins全部拷贝过来试试，主要是里面的Content。
+Plugins
+Content
+GameFeatures/.../Content
 
-Content: 可能不会上传，怕大小可能被限制了。
+主要是Content比较大，到底传不传呢。现在没传全
+
