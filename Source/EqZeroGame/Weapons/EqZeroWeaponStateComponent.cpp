@@ -47,11 +47,15 @@ void UEqZeroWeaponStateComponent::TickComponent(float DeltaTime, enum ELevelTick
 
 bool UEqZeroWeaponStateComponent::ShouldShowHitAsSuccess(const FHitResult& Hit) const
 {
-	AActor* HitActor = Hit.GetActor();
+    AActor* HitActor = Hit.GetActor();
+    if (HitActor == nullptr)
+    {
+        return false;
+    }
 
-	// 暂时没有队伍系统，默认所有人都是敌人
-
-	return true;
+    // 只有打到 Pawn（角色）才算成功命中
+    // 后续接入队伍系统后可进一步判断敌我
+    return HitActor->IsA<APawn>();
 }
 
 bool UEqZeroWeaponStateComponent::ShouldUpdateDamageInstigatedTime(const FGameplayEffectContextHandle& EffectContext) const

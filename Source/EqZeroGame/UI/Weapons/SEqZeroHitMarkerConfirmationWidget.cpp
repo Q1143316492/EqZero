@@ -34,7 +34,7 @@ int32 SEqZeroHitMarkerConfirmationWidget::OnPaint(const FPaintArgs& Args, const 
 
 	// 根据当前的击中通知不透明度决定是否绘制标记
 	const bool bDrawMarkers = (HitNotifyOpacity > KINDA_SMALL_NUMBER);
-
+	
 	if (bDrawMarkers)
 	{
 		

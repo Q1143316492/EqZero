@@ -43,7 +43,11 @@ void UEqZeroRangedWeaponInstance::UpdateDebugVisualization()
 	Debug_CurrentSpreadAngle = CurrentSpreadAngle;
 	Debug_CurrentSpreadAngleMultiplier = CurrentSpreadAngleMultiplier;
 
-	UE_LOG(LogTemp, Log, TEXT("Heat: %.2f  Spread: %.2f  Multiplier: %.2f"), CurrentHeat, CurrentSpreadAngle, CurrentSpreadAngleMultiplier);
+	// UE_LOG(LogTemp, Log, TEXT("Heat: %.2f  Spread: %.2f  Multiplier: %.2f"), CurrentHeat, CurrentSpreadAngle, CurrentSpreadAngleMultiplier);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Yellow, 
+	FString::Printf(TEXT("Heat: %.2f  Spread: %.2f  Multiplier: %.2f"), 
+	CurrentHeat, CurrentSpreadAngle, CurrentSpreadAngleMultiplier));
 }
 #endif
 
