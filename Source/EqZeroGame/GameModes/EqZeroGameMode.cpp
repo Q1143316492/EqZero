@@ -27,6 +27,7 @@
 #include "Character/EqZeroPawnExtensionComponent.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
+#include "Player/EqZeroPlayerBotController.h"
 #include "Player/EqZeroPlayerSpawningManagerComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(EqZeroGameMode)
@@ -485,6 +486,10 @@ void AEqZeroGameMode::RequestPlayerRestartNextFrame(AController* Controller, boo
 	if (APlayerController* PC = Cast<APlayerController>(Controller))
 	{
 		GetWorldTimerManager().SetTimerForNextTick(PC, &APlayerController::ServerRestartPlayer_Implementation);
+	}
+	else if (AEqZeroPlayerBotController* BotController = Cast<AEqZeroPlayerBotController>(Controller))
+	{
+		GetWorldTimerManager().SetTimerForNextTick(BotController, &AEqZeroPlayerBotController::ServerRestartController);
 	}
 }
 
