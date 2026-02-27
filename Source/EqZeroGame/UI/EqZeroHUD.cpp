@@ -30,6 +30,11 @@ void AEqZeroHUD::BeginPlay()
 {
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, UGameFrameworkComponentManager::NAME_GameActorReady);
 	Super::BeginPlay();
+
+	// UE_LOG(LogTemp, Log, TEXT("EqZeroHUD: %s, IsLocalController=%d, NetMode=%d LocalRole=%d"),
+	// 	*GetNameSafe(this),
+	// 	GetOwningPlayerController() ? GetOwningPlayerController()->IsLocalController() : -1,
+	// 	(int32)GetWorld()->GetNetMode(), (int32)GetLocalRole()); // 1, 3 NM_Client, 3 ROLE_Authority
 }
 
 void AEqZeroHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)

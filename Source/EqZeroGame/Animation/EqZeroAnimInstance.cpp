@@ -154,6 +154,10 @@ void UEqZeroAnimInstance::UpdateDebugData()
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("TurnYawCurveValue: %.2f"), TurnYawCurveValue));
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("RootYawOffset: %.2f"), RootYawOffset));
 
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableRHandIK: %.2f"), GetCurveValue(TEXT("DisableRHandIK"))));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableLHandIK: %.2f"), GetCurveValue(TEXT("DisableLHandIK"))));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableHandIKRetargeting: %.2f"), GetCurveValue(TEXT("DisableHandIKRetargeting"))));
+
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
 	MessageSubsystem.BroadcastMessage(EqZeroGameplayTags::EqZero_Anim_Debug, DebugMessage);
 }

@@ -245,6 +245,8 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 	{
 		if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(SpecHandle))
 		{
+			// 维护输入还在按住的状态
+			// 虽然InputPressedSpecHandles也有，但是 Pressed里面每帧清空，跨帧的IA会有问题。
 			if (AbilitySpec->Ability && !AbilitySpec->IsActive())
 			{
 				const UEqZeroGameplayAbility* EqZeroAbilityCDO = Cast<UEqZeroGameplayAbility>(AbilitySpec->Ability);
@@ -286,8 +288,9 @@ void UEqZeroAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bG
 	}
 
 	// 尝试激活所有通过按压和长按触发的能力。
-	// 我们一次性完成所有操作，这样长按输入就不会激活该能力
-	// 然后也不会因为按压而向该能力发送输入事件。
+	// 我们一次性完成所有操作，这样长按输入就不会激活该能力 We do it all at once so that held inputs don't activate the ability
+	// 然后也不会因为按压而向该能力发送输入事件。 and then also send one input event to the ability because of the press.
+	// 解释：如果不批处理，WhileInputActive 先激活了技能，紧接着 Pressed 循环又看到它 IsActive 就给它发 InputPressed 事件 —— 技能会收到一个多余的输入事件
 	for (const FGameplayAbilitySpecHandle& AbilitySpecHandle : AbilitiesToActivate)
 	{
 		TryActivateAbility(AbilitySpecHandle);

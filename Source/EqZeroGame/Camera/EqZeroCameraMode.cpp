@@ -336,7 +336,7 @@ void UEqZeroCameraModeStack::PushCameraMode(TSubclassOf<UEqZeroCameraMode> Camer
 	const float BlendWeight = (bShouldBlend ? ExistingStackContribution : 1.0f);
 	CameraMode->SetBlendWeight(BlendWeight);
 
-	// 插入到栈顶，并且包装最后一个权重是1
+	// 插入到栈顶，并且保证最后一个权重是1
 	CameraModeStack.Insert(CameraMode, 0);
 	CameraModeStack.Last()->SetBlendWeight(1.0f);
 

@@ -176,8 +176,8 @@ void UEqZeroCameraMode_ThirdPerson::UpdatePreventPenetration(float DeltaTime)
 		// 调整安全距离高度，使其与瞄准线相同，但在胶囊体内。
         // 摄像机不能越过头或者低过脚，的一个限制，但是下面马上就覆盖掉了
 		float const PushInDistance = PenetrationAvoidanceFeelers[0].Extent + CollisionPushOutDistance;
-		float const MaxHalfHeight = PPActor->GetSimpleCollisionHalfHeight() - PushInDistance;
-		SafeLocation.Z = FMath::Clamp(ClosestPointOnLineToCapsuleCenter.Z, SafeLocation.Z - MaxHalfHeight, SafeLocation.Z + MaxHalfHeight);
+		// float const MaxHalfHeight = PPActor->GetSimpleCollisionHalfHeight() - PushInDistance;
+		// SafeLocation.Z = FMath::Clamp(ClosestPointOnLineToCapsuleCenter.Z, SafeLocation.Z - MaxHalfHeight, SafeLocation.Z + MaxHalfHeight);
 
         // 但是这里 SafeLocation 马上被覆盖了，上面的逻辑存演示作用
         // 返回与最近的 Body Instance 表面的距离的平方
@@ -196,8 +196,9 @@ void UEqZeroCameraMode_ThirdPerson::UpdatePreventPenetration(float DeltaTime)
         // 这里反正是说要进行摄像机前的墙检测, 但是应该是直接修改数值的
 		bool const bSingleRayPenetrationCheck = !bDoPredictiveAvoidance; // 要不要单次射线检测，还是多几条射线
 
-        // 这个函数要修改 View.Location 摄像机位置
-        // 计算 AimLineToDesiredPosBlockedPct 阻挡百分比。1代表没阻挡摄像机在理想位置，越小摄像机越靠近角色，0就贴在安全点了
+        // 这个函数要做的事情
+        // 【1】修改 View.Location 摄像机位置
+        // 【2】计算 AimLineToDesiredPosBlockedPct 阻挡百分比。1代表没阻挡摄像机在理想位置，越小摄像机越靠近角色，0就贴在安全点了
 		PreventCameraPenetration(*PPActor, SafeLocation, View.Location, DeltaTime, AimLineToDesiredPosBlockedPct, bSingleRayPenetrationCheck);
 
 		IEqZeroCameraAssistInterface* AssistArray[] = { TargetControllerAssist, TargetActorAssist, PPActorAssist };
@@ -216,7 +217,8 @@ void UEqZeroCameraMode_ThirdPerson::UpdatePreventPenetration(float DeltaTime)
 	}
 }
 
-void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const& ViewTarget, FVector const& SafeLoc, FVector& CameraLoc, float const& DeltaTime, float& DistBlockedPct, bool bSingleRayOnly)
+void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(
+	class AActor const& ViewTarget, FVector const& SafeLoc, FVector& CameraLoc, float const& DeltaTime, float& DistBlockedPct, bool bSingleRayOnly)
 {
     // 先看参数 ViewTarget，主角actor
     // SafeLoc 保底安全位置。图：【安全位置/角色】      【实际位置/ 墙】     <-【期望位置/摄像机】
@@ -227,7 +229,7 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 	DebugActorsHitDuringCameraPenetration.Reset();
 #endif
 
-    // Soft 和 Hard 阻挡百分比？
+    // 两个变量都初始化为上一帧的阻挡百分比。后面会分别被主射线（Hard）和预测射线（Soft）更新。
 	float HardBlockedPct = DistBlockedPct;
 	float SoftBlockedPct = DistBlockedPct;
 
@@ -235,17 +237,20 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
      * 角色(安全位置) _____墙______ 摄像机(期望位置前面计算出来的)
      */
 
+	// 从安全点指向摄像机期望位置的向量。这就是主射线的方向和长度。
 	FVector BaseRay = CameraLoc - SafeLoc;
 	FRotationMatrix BaseRayMatrix(BaseRay.Rotation());
 	FVector BaseRayLocalUp, BaseRayLocalFwd, BaseRayLocalRight;
-
-    // 获取按该矩阵的缩放比例缩放后的此矩阵的轴
 	BaseRayMatrix.GetScaledAxes(BaseRayLocalFwd, BaseRayLocalRight, BaseRayLocalUp);
 
+	// 本帧阻挡百分比初始化为1。也就是没有，某需会一直min减下去。
 	float DistBlockedPctThisFrame = 1.f;
 
+	// 开关，单次还是多次检测
 	int32 const NumRaysToShoot = bSingleRayOnly ? FMath::Min(1, PenetrationAvoidanceFeelers.Num()) : PenetrationAvoidanceFeelers.Num();
-	FCollisionQueryParams SphereParams(SCENE_QUERY_STAT(CameraPen), false, nullptr/*PlayerCamera*/);
+
+	
+	FCollisionQueryParams SphereParams(SCENE_QUERY_STAT(CameraPen), false, nullptr);
 	SphereParams.AddIgnoredActor(&ViewTarget);
 
     // 官方注释
@@ -255,6 +260,7 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 	//	SphereParams.AddIgnoredActor(IgnoreActorForCameraPenetration);
 	//}
 
+	// 先创建一个半径为0的球体，后面每条射线会设置各自的半径。
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(0.f);
 	UWorld* World = GetWorld();
 
@@ -262,11 +268,14 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 	for (int32 RayIdx = 0; RayIdx < NumRaysToShoot; ++RayIdx)
 	{
 		FEqZeroPenetrationAvoidanceFeeler& Feeler = PenetrationAvoidanceFeelers[RayIdx];
-		if (Feeler.FramesUntilNextTrace <= 0) // 到了检测的帧数
+		if (Feeler.FramesUntilNextTrace <= 0) // 到了检测的帧数，不同的射线有不同的检测频率配置
 		{
-			// 计算射线目标
+			// 计算射线终点
 			FVector RayTarget;
 			{
+				// BaseRay 是 安全点 -> 摄像机
+				// 绕射线的上，旋转Yaw度，左右偏转。
+				// 绕射线的 右，旋转Pitch度，上下偏转。
 				FVector RotatedRay = BaseRay.RotateAngleAxis(Feeler.AdjustmentRot.Yaw, BaseRayLocalUp);
 				RotatedRay = RotatedRay.RotateAngleAxis(Feeler.AdjustmentRot.Pitch, BaseRayLocalRight);
 				RayTarget = SafeLoc + RotatedRay;
@@ -282,7 +291,8 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 
 			// MT-> passing camera as actor so that camerablockingvolumes know when it's the camera doing traces
 
-            // 射线检测了
+            // 球形扫描
+			// 从 SafeLoc → RayTarget 一个球滑过去做碰撞，半径0的时候是细线检测
 			FHitResult Hit;
 			const bool bHit = World->SweepSingleByChannel(Hit, SafeLoc, RayTarget, FQuat::Identity, TraceChannel, SphereShape, SphereParams);
 
@@ -290,9 +300,11 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 #if ENABLE_DRAW_DEBUG
 			if (World->TimeSince(LastDrawDebugTime) < 1.f)
 			{
-				DrawDebugSphere(World, SafeLoc, SphereShape.Sphere.Radius, 8, FColor::Red);
-				DrawDebugSphere(World, bHit ? Hit.Location : RayTarget, SphereShape.Sphere.Radius, 8, FColor::Red);
-				DrawDebugLine(World, SafeLoc, bHit ? Hit.Location : RayTarget, FColor::Red);
+				const float DebugLifeTime = 2.f;
+				DrawDebugSphere(World, SafeLoc, SphereShape.Sphere.Radius, 8, FColor::Red, false, DebugLifeTime);
+				DrawDebugSphere(World, bHit ? Hit.Location : RayTarget, SphereShape.Sphere.Radius, 8, FColor::Blue, false, DebugLifeTime);
+				// UE_LOG(LogTemp, Error, TEXT("Camera Penetration Sweep: RayIdx %d, Hit %s, HitActor %s"), RayIdx, bHit ? TEXT("True") : TEXT("False"), bHit ? *Hit.GetActor()->GetName() : TEXT("None"));
+				DrawDebugLine(World, SafeLoc, bHit ? Hit.Location : RayTarget, FColor::Yellow, false, DebugLifeTime);
 			}
 #endif // ENABLE_DRAW_DEBUG
 
@@ -353,10 +365,9 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 				}
 			}
 
-			if (RayIdx == 0)
+			if (RayIdx == 0) // 规定，0号射线是主射线，权重最高的那条
 			{
 				// 不要向这个方向插值，直接吸附到它上面
-				// 假设光线 0 是中心 / 主光线
 				HardBlockedPct = DistBlockedPctThisFrame;
 			}
 			else
@@ -370,15 +381,19 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 		}
 	}
 
+	// 刚切换摄像机模式时，不做过渡，直接跳到本帧值。
 	if (bResetInterpolation)
 	{
 		DistBlockedPct = DistBlockedPctThisFrame;
 	}
+	// 上一帧比本帧更被挡 → 摄像机正在远离墙壁，要恢复到理想位置。
 	else if (DistBlockedPct < DistBlockedPctThisFrame)
 	{
-		// interpolate smoothly out
+		// 上帧: 安全点 ===0.3=== 摄像机              （离墙近）
+		// 本帧: 安全点 =========0.8======= 摄像机    （离墙远了）
 		if (PenetrationBlendOutTime > DeltaTime)
 		{
+			// 平滑恢复
 			DistBlockedPct = DistBlockedPct + DeltaTime / PenetrationBlendOutTime * (DistBlockedPctThisFrame - DistBlockedPct);
 		}
 		else
@@ -386,21 +401,23 @@ void UEqZeroCameraMode_ThirdPerson::PreventCameraPenetration(class AActor const&
 			DistBlockedPct = DistBlockedPctThisFrame;
 		}
 	}
-	else
+	else // 本帧比上一帧更被挡 → 摄像机正在靠近墙壁，要往角色方向拉。
 	{
-		if (DistBlockedPct > HardBlockedPct)
+		if (DistBlockedPct > HardBlockedPct) // 主射线检测到更近的墙, 立即媳妇
 		{
 			DistBlockedPct = HardBlockedPct;
 		}
 		else if (DistBlockedPct > SoftBlockedPct)
 		{
-			// interpolate smoothly in
-			if (PenetrationBlendInTime > DeltaTime)
+			if (PenetrationBlendInTime > DeltaTime) // 平滑的过度
 			{
 				DistBlockedPct = DistBlockedPct - DeltaTime / PenetrationBlendInTime * (DistBlockedPct - SoftBlockedPct);
 			}
 			else
 			{
+				// 如果 PenetrationBlendOutTime 非常小（比如 0.001），甚至为 0 或比 DeltaTime 还小：
+				// DeltaTime / PenetrationBlendOutTime 可能 ≥ 1，甚至趋于无穷
+				// 插值结果会超过目标值，产生过冲或 NaN
 				DistBlockedPct = SoftBlockedPct;
 			}
 		}

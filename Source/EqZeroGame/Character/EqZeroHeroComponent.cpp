@@ -274,14 +274,14 @@ void UEqZeroHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCom
 
                     // 技能输入
 					TArray<uint32> BindHandles;
-					EqZeroIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+					EqZeroIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
 
                     // 运动输入
-					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
-					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
-					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
-					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
-					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);
+					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, false);
+					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, false);
+					EqZeroIC->BindNativeAction(InputConfig, EqZeroGameplayTags::InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, false);
 				}
 			}
 		}

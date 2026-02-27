@@ -34,6 +34,11 @@ UEqZeroUICameraManagerComponent* AEqZeroPlayerCameraManager::GetUICameraComponen
 void AEqZeroPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
 	Super::UpdateViewTarget(OutVT, DeltaTime);
+
+	// UE_LOG(LogTemp, Log, TEXT("AEqZeroPlayerCameraManager: %s, IsLocalController=%d, NetMode=%d LocalRole=%d"),
+	// 	*GetNameSafe(this),
+	// 	GetOwningPlayerController() ? GetOwningPlayerController()->IsLocalController() : -1,
+	// 	(int32)GetWorld()->GetNetMode(), (int32)GetLocalRole()); // 1, 3 NM_Client, 3 ROLE_Authority
 }
 
 void AEqZeroPlayerCameraManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)

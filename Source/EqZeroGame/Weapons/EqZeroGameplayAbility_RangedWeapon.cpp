@@ -582,7 +582,7 @@ void UEqZeroGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGamep
 						{
 							if (const FEqZeroGameplayAbilityTargetData_SingleTargetHit* SingleTargetHit = static_cast<const FEqZeroGameplayAbilityTargetData_SingleTargetHit*>(LocalTargetDataHandle.Get(i)))
 							{
-								// 这里是一个扩展流程，服务器直接认可客户端的结果是有效的
+								// 这里是一个扩展流程，服务器直接认可客户端的结果是有效的，所以这里目前一直是false
 								if (SingleTargetHit->bHitReplaced)
 								{
 									HitReplaces.Add(i);
@@ -647,7 +647,7 @@ void UEqZeroGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 
 	// 构建 TargetData
 	FGameplayAbilityTargetDataHandle TargetData;
-	TargetData.UniqueId = WeaponStateComponent ? WeaponStateComponent->GetUnconfirmedServerSideHitMarkerCount() : 0;
+	TargetData.UniqueId = WeaponStateComponent ? WeaponStateComponent->GetUnconfirmedServerSideHitMarkerCount() : 0; // 这里合适吗？
 
 	if (FoundHits.Num() > 0)
 	{

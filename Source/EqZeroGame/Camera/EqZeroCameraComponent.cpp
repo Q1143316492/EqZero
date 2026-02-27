@@ -30,7 +30,7 @@ void UEqZeroCameraComponent::OnRegister()
 void UEqZeroCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
 {
 	Super::GetCameraView(DeltaTime, DesiredView);
-
+	
 	// 通过代理查询一下当前最合适的摄像机模式是什么，可能是技能组件的影响。如果是重复的摄像模式栈里面会处理。
 	UpdateCameraModes();
 
@@ -40,6 +40,15 @@ void UEqZeroCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& De
 	CameraModeStack->EvaluateStack(DeltaTime, CameraModeView);
 
 	// 保持玩家控制器与最新视图同步
+	/*
+	 * 为什么要 SetControlRotation？
+	 * DesiredView 是本帧渲染的输入，传给引擎决定这帧怎么画画面，只活在本地这一帧，下帧就丢弃了
+	 * SetControlRotation 是写入 PlayerController 的持久状态。ControlRotation 这个值会被 UE 自动复制给服务端，服务端用它做权威判定（射线从哪个方向打、技能目标方向等）。
+	 *
+	 * 如果去掉 画面视觉上没问题（DesiredView 正常）
+	 * 但 ControlRotation 就不会随 CameraMode Stack 计算的结果更新了，服务端拿到的还是旧的或者默认的朝向
+	 * 开枪时服务端校验的射线方向就和客户端实际看到的方向对不上，Replay 回放里角色朝向也会错
+	 */
 	if (APawn* TargetPawn = Cast<APawn>(GetTargetActor()))
 	{
 		if (APlayerController* PC = TargetPawn->GetController<APlayerController>())
@@ -99,6 +108,8 @@ void UEqZeroCameraComponent::UpdateCameraModes()
 
 void UEqZeroCameraComponent::DrawDebug(UCanvas* Canvas) const
 {
+	// showdebug camera
+
 	check(Canvas);
 
 	FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
