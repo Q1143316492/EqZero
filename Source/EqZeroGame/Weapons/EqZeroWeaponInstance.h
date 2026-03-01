@@ -55,6 +55,7 @@ protected:
 	 * Device properties that should be applied while this weapon is equipped.
 	 * These properties will be played in with the "Looping" flag enabled, so they will
 	 * play continuously until this weapon is unequipped!
+	 * 
 	 * Device Properties 的意思是例如PS5手柄的自适应扳机配置
 	 */
 	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "Input Devices")

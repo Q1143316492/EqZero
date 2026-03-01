@@ -204,6 +204,7 @@ void UEqZeroCameraMode_ThirdPerson::UpdatePreventPenetration(float DeltaTime)
 		IEqZeroCameraAssistInterface* AssistArray[] = { TargetControllerAssist, TargetActorAssist, PPActorAssist };
 
         // 摄像机是否被挤压得太近了，会在接口里面隐藏角色模型
+		// UE_LOG(LogTemp, Log, TEXT("AimLineToDesiredPosBlockedPct: %f"), AimLineToDesiredPosBlockedPct);
 		if (AimLineToDesiredPosBlockedPct < ReportPenetrationPercent)
 		{
 			for (IEqZeroCameraAssistInterface* Assist : AssistArray)

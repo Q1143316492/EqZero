@@ -54,7 +54,7 @@ public:
 	FPrimaryAssetId ExperienceOverride;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZeroBots, meta=(InlineEditConditionToggle))
-	bool bOverrideBotCount = false;
+	bool bOverrideBotCount = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, config, Category=EqZeroBots, meta=(EditCondition=bOverrideBotCount))
 	int32 OverrideNumPlayerBotsToSpawn = 0;

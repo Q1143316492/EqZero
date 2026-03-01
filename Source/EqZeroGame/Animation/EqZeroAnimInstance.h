@@ -75,6 +75,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayTags")
 	FGameplayTagBlueprintPropertyMap GameplayTagPropertyMap;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
+	bool bEnableRootYawOffset = true;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "References")
 	TWeakObjectPtr<class AEqZeroCharacter> Character = nullptr;
@@ -250,7 +253,4 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
 	bool UseFootPlacement;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn In Place")
-	bool bEnableRootYawOffset = true;
 };

@@ -8,6 +8,7 @@
 #include "NativeGameplayTags.h"
 #include "Weapons/EqZeroWeaponStateComponent.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "AbilitySystem/EqZeroGameplayAbilityTargetData_SingleTargetHit.h"
 #include "DrawDebugHelpers.h"
 
@@ -608,6 +609,45 @@ void UEqZeroGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGamep
 
 			// 蓝图挂钩：触发伤害、播放特效等
 			OnRangedWeaponTargetDataReady(LocalTargetDataHandle);
+
+			// C++ 侧应用伤害 GE
+			// 在 FScopedPredictionWindow 内：
+			//   - 客户端：创建预测 GE（立即触发 Cue → 受击动画即时反馈）
+			//   - 服务器：创建权威 GE（触发 Cue → NetMulticast 复制到其他客户端）
+			//   - GAS 自动对账：服务器确认后移除客户端的预测效果，替换为权威版本
+			// 不需要 HasAuthority 守卫 —— 客户端和服务器都需要 Apply：
+			//   客户端 Apply 是为了预测（本地即时反馈），服务器 Apply 是权威来源
+			if (DamageEffectClassCppUse)
+			{
+				TSet<AActor*> DamagedActors;
+
+				for (int32 i = 0; i < LocalTargetDataHandle.Num(); ++i)
+				{
+					if (const FGameplayAbilityTargetData* TargetData = LocalTargetDataHandle.Get(i))
+					{
+						if (const FHitResult* HitResult = TargetData->GetHitResult())
+						{
+							AActor* HitActor = HitResult->GetActor();
+							if (HitActor && !DamagedActors.Contains(HitActor))
+							{
+								if (UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(HitActor))
+								{
+									DamagedActors.Add(HitActor);
+
+									FGameplayEffectContextHandle ContextHandle = MyAbilityComponent->MakeEffectContext();
+									ContextHandle.AddHitResult(*HitResult);
+
+									FGameplayEffectSpecHandle SpecHandle = MyAbilityComponent->MakeOutgoingSpec(DamageEffectClassCppUse, 1.0f, ContextHandle);
+									if (SpecHandle.IsValid() && K2_HasAuthority())
+									{
+										MyAbilityComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		else
 		{

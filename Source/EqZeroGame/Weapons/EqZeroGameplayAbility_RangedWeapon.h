@@ -125,7 +125,9 @@ protected:
 	// target data 准备好的时候，处理伤害特效等
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnRangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
-
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	TSubclassOf<UGameplayEffect> DamageEffectClassCppUse;
 private:
 	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;
 };

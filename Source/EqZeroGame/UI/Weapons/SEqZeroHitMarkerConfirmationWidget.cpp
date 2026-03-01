@@ -35,10 +35,11 @@ int32 SEqZeroHitMarkerConfirmationWidget::OnPaint(const FPaintArgs& Args, const 
 	// 根据当前的击中通知不透明度决定是否绘制标记
 	const bool bDrawMarkers = (HitNotifyOpacity > KINDA_SMALL_NUMBER);
 	
-	if (bDrawMarkers)
+	if (bDrawMarkers) 
 	{
 		
 		TArray<FEqZeroScreenSpaceHitLocation> LastWeaponDamageScreenLocations;
+
 		if (APlayerController* PC = MyContext.IsInitialized() ? MyContext.GetPlayerController() : nullptr)
 		{
 			if (UEqZeroWeaponStateComponent* WeaponStateComponent = PC->FindComponentByClass<UEqZeroWeaponStateComponent>())
@@ -46,7 +47,7 @@ int32 SEqZeroHitMarkerConfirmationWidget::OnPaint(const FPaintArgs& Args, const 
 				WeaponStateComponent->GetLastWeaponDamageScreenLocations(LastWeaponDamageScreenLocations);
 			}
 		}
-
+		
 		if ((LastWeaponDamageScreenLocations.Num() > 0) && (PerHitMarkerImage != nullptr))
 		{
 			const FVector2D HalfAbsoluteSize = AllottedGeometry.GetAbsoluteSize() * 0.5f;
@@ -69,7 +70,7 @@ int32 SEqZeroHitMarkerConfirmationWidget::OnPaint(const FPaintArgs& Args, const 
 				// 3. 关键坐标转换：窗口屏幕坐标 → 控件本地坐标
 				//    Hit.Location 是视口坐标，加上 MyCullingRect.TopLeft 转为窗口坐标
 				//    再用 AbsoluteToLocal 转为控件内部坐标
-				const FVector2D WindowSSLocation = Hit.Location + MyCullingRect.GetTopLeft(); // 在非全屏模式下考虑窗口装饰
+				const FVector2D WindowSSLocation = Hit.Location + MyCullingRect.GetTopLeft(); // 在非全屏模式下考虑窗口装饰(就是标题栏)
 				const FSlateRenderTransform DrawPos(AllottedGeometry.AbsoluteToLocal(WindowSSLocation));
 
 				// 图片中心对齐到命中点
@@ -78,7 +79,7 @@ int32 SEqZeroHitMarkerConfirmationWidget::OnPaint(const FPaintArgs& Args, const 
 			}
 		}
 		
-		if (AnyHitsMarkerImage != nullptr)
+		if (AnyHitsMarkerImage != nullptr) // 有配置就简单的画一个图片上去
 		{
 			FLinearColor MarkerColor = bColorAndOpacitySet ?
 				ColorAndOpacity.Get().GetColor(InWidgetStyle) :

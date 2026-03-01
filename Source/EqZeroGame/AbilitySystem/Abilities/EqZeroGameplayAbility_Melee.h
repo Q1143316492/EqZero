@@ -53,7 +53,10 @@ protected:
 
 	UFUNCTION()
 	void OnMontageBlendOut();
-	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void TestGE();
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
     TEnumAsByte<EDrawDebugTrace::Type> DebugType = EDrawDebugTrace::None;

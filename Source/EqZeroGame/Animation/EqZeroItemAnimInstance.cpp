@@ -26,7 +26,6 @@ void UEqZeroItemAnimInstance::NativeInitializeAnimation()
 void UEqZeroItemAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-
 	UpdateData(DeltaSeconds);
 }
 

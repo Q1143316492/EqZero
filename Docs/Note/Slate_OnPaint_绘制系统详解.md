@@ -30,6 +30,7 @@ SWidget::Paint()          // 引擎内部调用入口
 ```
 
 关键点：
+
 - **OnPaint 不直接调用 GPU**，而是生成一系列 `FSlateDrawElement` 绘制指令，由 Slate Renderer 在帧末统一提交到 GPU。
 - 控件树自上而下递归调用 `Paint()`，父控件负责调用子控件的 `Paint()`。
 - `SLeafWidget`（叶子控件）没有子控件，只需重写 `OnPaint` 即可。
@@ -39,15 +40,16 @@ SWidget::Paint()          // 引擎内部调用入口
 
 ## 2. SWidget 核心虚函数
 
-| 虚函数 | 作用 | 何时重写 |
-|--------|------|----------|
-| `OnPaint()` | 自定义绘制逻辑 | 需要自绘内容时（本文重点） |
-| `ComputeDesiredSize()` | 返回控件期望的大小 | 自定义控件必须重写 |
-| `Tick()` | 每帧逻辑更新 | 需要动画/状态更新时 |
-| `OnArrangeChildren()` | 布局子控件 | SPanel 子类必须重写 |
-| `ComputeVolatility()` | 是否每帧都需要重绘 | 动态内容返回 true |
+| 虚函数                    | 作用        | 何时重写          |
+| ---------------------- | --------- | ------------- |
+| `OnPaint()`            | 自定义绘制逻辑   | 需要自绘内容时（本文重点） |
+| `ComputeDesiredSize()` | 返回控件期望的大小 | 自定义控件必须重写     |
+| `Tick()`               | 每帧逻辑更新    | 需要动画/状态更新时    |
+| `OnArrangeChildren()`  | 布局子控件     | SPanel 子类必须重写 |
+| `ComputeVolatility()`  | 是否每帧都需要重绘 | 动态内容返回 true   |
 
 继承关系选择：
+
 ```
 SWidget
   ├─ SLeafWidget           ← 无子控件，纯自绘（如本项目的 HitMarker）
@@ -74,12 +76,15 @@ virtual int32 OnPaint(
 ### 各参数详解
 
 #### `FPaintArgs& Args`
+
 - 包含父到子传递的绘制上下文（如父控件的绘制信息）。
 - 大多数情况下你不需要直接使用它，除非要绘制子控件时传递给它们。
 
 #### `FGeometry& AllottedGeometry` ★ 最重要
+
 - 描述了**本控件在屏幕上的位置、大小和变换**。
 - 常用方法：
+  
   ```cpp
   AllottedGeometry.GetLocalSize()                    // 控件本地尺寸 FVector2D
   AllottedGeometry.GetAbsoluteSize()                 // 屏幕上的实际像素尺寸
@@ -90,27 +95,34 @@ virtual int32 OnPaint(
   ```
 
 #### `FSlateRect& MyCullingRect`
+
 - 当前的可见裁剪区域（绝对坐标）。
 - 超出这个矩形的内容不需要绘制，引擎会自动裁剪。
 - 可用 `MyCullingRect.GetTopLeft()` 获取裁剪区的左上角位置（窗口偏移）。
 
 #### `FSlateWindowElementList& OutDrawElements` ★ 绘制输出
+
 - 这是一个绘制指令的收集器——你调用 `FSlateDrawElement::MakeXxx()` 时，指令就添加到这里。
 - 最终由 Slate Renderer 统一渲染。
 
 #### `int32 LayerId`
+
 - 层级号，决定绘制先后（数值越大越靠前）。
 - 如果你的控件只画一层，直接返回 `LayerId` 即可。
 - 如果需要分层（如背景+前景），可以 `LayerId + 1` 区分。
 
 #### `FWidgetStyle& InWidgetStyle`
+
 - 从父控件继承下来的样式：
+  
   ```cpp
   InWidgetStyle.GetColorAndOpacityTint()  // 继承的颜色/透明度
   ```
 
 #### `bool bParentEnabled`
+
 - 父控件是否处于启用状态。通常配合 `ShouldBeEnabled(bParentEnabled)` 使用：
+  
   ```cpp
   const bool bIsEnabled = ShouldBeEnabled(bParentEnabled);
   const ESlateDrawEffect DrawEffects = bIsEnabled 
@@ -119,6 +131,7 @@ virtual int32 OnPaint(
   ```
 
 #### 返回值 `int32`
+
 - 返回你使用的最高 LayerId。如果只用了传入的 LayerId，就直接 `return LayerId`。
 
 ---
@@ -140,6 +153,7 @@ Slate 中有三个坐标系：
 ```
 
 核心转换：
+
 ```cpp
 // 绝对 → 本地
 FVector2D LocalPos = Geometry.AbsoluteToLocal(AbsolutePos);
@@ -163,14 +177,14 @@ FPaintGeometry PaintGeo = Geometry.ToPaintGeometry(
 
 这是你在 OnPaint 中实际"画东西"的 API：
 
-| 方法 | 用途 |
-|------|------|
-| `MakeBox()` | 绘制矩形/图片（最常用） |
-| `MakeText()` | 绘制文本 |
-| `MakeLine()` / `MakeLines()` | 绘制线段 |
-| `MakeSpline()` | 绘制样条曲线 |
-| `MakeGradient()` | 绘制渐变 |
-| `MakeCustom()` | 自定义绘制（传入 FSlateRenderTransform） |
+| 方法                           | 用途                              |
+| ---------------------------- | ------------------------------- |
+| `MakeBox()`                  | 绘制矩形/图片（最常用）                    |
+| `MakeText()`                 | 绘制文本                            |
+| `MakeLine()` / `MakeLines()` | 绘制线段                            |
+| `MakeSpline()`               | 绘制样条曲线                          |
+| `MakeGradient()`             | 绘制渐变                            |
+| `MakeCustom()`               | 自定义绘制（传入 FSlateRenderTransform） |
 
 ### MakeBox 详解（最常用）
 
@@ -230,6 +244,7 @@ MyBrush.DrawAs = ESlateBrushDrawType::Image; // Image / Box / Border / NoDrawTyp
 ```
 
 获取 Brush 的常用方式：
+
 ```cpp
 // 从 Style 获取
 FCoreStyle::Get().GetBrush("Throbber.CircleChunk")
@@ -251,16 +266,17 @@ int32 OnPaint(..., int32 LayerId, ...) const
 {
     // 第一层：绘制背景
     FSlateDrawElement::MakeBox(OutDrawElements, LayerId, ...);
-    
+
     // 第二层：绘制前景（LayerId + 1 确保在背景之上）
     FSlateDrawElement::MakeBox(OutDrawElements, LayerId + 1, ...);
-    
+
     // 返回使用的最高层级
     return LayerId + 1;
 }
 ```
 
 规则：
+
 - 相同 LayerId 的元素按添加顺序绘制（后添加的在上面）。
 - 不同 LayerId 的元素按数值大小绘制（大的在上面）。
 - 子控件通常使用父控件返回的 LayerId + 1。
@@ -369,12 +385,12 @@ int32 SMySimplePaintWidget::OnPaint(
 
     // ===== Step 3: 绘制居中文字 =====
     const FString TextStr = DisplayText.Get().ToString();
-    
+
     // 测量文本尺寸，用于居中对齐
     const FVector2D TextSize = FSlateApplication::Get()
         .GetRenderer()->GetFontMeasureService()
         ->Measure(TextStr, FontInfo);
-    
+
     // 计算居中偏移
     const FVector2D LocalSize = AllottedGeometry.GetLocalSize();
     const FVector2D TextOffset = (LocalSize - TextSize) * 0.5f;
@@ -450,7 +466,7 @@ public:
         int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override
     {
         const FSlateBrush* Brush = FCoreStyle::Get().GetBrush("WhiteBrush");
-        
+
         // 根据脉冲值改变透明度
         FLinearColor Color = FLinearColor::Green;
         Color.A = PulseAlpha;
@@ -459,7 +475,7 @@ public:
         const FVector2D Center = AllottedGeometry.GetLocalPositionAtCoordinates(FVector2D(0.5f, 0.5f));
         const float Size = 20.0f + PulseAlpha * 30.0f;  // 20~50 像素
         const FVector2D BoxSize(Size, Size);
-        
+
         FSlateDrawElement::MakeBox(
             OutDrawElements, LayerId,
             AllottedGeometry.ToPaintGeometry(BoxSize, FSlateLayoutTransform(Center - BoxSize * 0.5f)),
@@ -533,7 +549,9 @@ const FPaintGeometry Geometry(AllottedGeometry.ToPaintGeometry(
 ## 11. 常见陷阱与最佳实践
 
 ### ❌ 不要在 OnPaint 中修改成员变量
+
 `OnPaint` 是 `const` 函数。状态更新放在 `Tick()` 中。
+
 ```cpp
 // 错误！OnPaint 是 const
 int32 OnPaint(...) const { MyValue = 42; } // 编译错误
@@ -543,13 +561,17 @@ void Tick(...) { MyValue = 42; }
 ```
 
 ### ❌ 不要忘记 ComputeVolatility
+
 如果你的控件每帧都在变化（如动画），必须返回 true，否则 Slate 可能缓存旧的绘制结果：
+
 ```cpp
 virtual bool ComputeVolatility() const override { return true; }
 ```
 
 ### ❌ 不要忘记 ComputeDesiredSize
+
 即使你的控件大小完全由父控件决定，也要给一个合理的默认值：
+
 ```cpp
 virtual FVector2D ComputeDesiredSize(float) const override
 {
@@ -571,7 +593,9 @@ AllottedGeometry.ToPaintGeometry(Size, FSlateLayoutTransform(Offset), FSlateRend
 ```
 
 ### ✅ 颜色继承链
+
 正确处理父控件传递的颜色/透明度：
+
 ```cpp
 // 获取继承的颜色 Tint
 FLinearColor FinalColor = InWidgetStyle.GetColorAndOpacityTint() * MyBrush->GetTint(InWidgetStyle);

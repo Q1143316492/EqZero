@@ -153,11 +153,16 @@ void UEqZeroAnimInstance::UpdateDebugData()
 	FEqZeroAnimDebugMessage DebugMessage;
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("TurnYawCurveValue: %.2f"), TurnYawCurveValue));
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("RootYawOffset: %.2f"), RootYawOffset));
-
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableRHandIK: %.2f"), GetCurveValue(TEXT("DisableRHandIK"))));
-	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableLHandIK: %.2f"), GetCurveValue(TEXT("DisableLHandIK"))));
 	DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableHandIKRetargeting: %.2f"), GetCurveValue(TEXT("DisableHandIKRetargeting"))));
-
+	
+	// LocalVelocityDirectionAngle, LocalVelocityDirectionAngleWithOffset
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("LocalVelocityDirectionAngle: %.2f"), LocalVelocityDirectionAngle));
+	DebugMessage.DebugLines.Add(FString::Printf(TEXT("LocalVelocityDirectionAngleWithOffset: %.2f"), LocalVelocityDirectionAngleWithOffset));
+	
+	// DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableRHandIK: %.2f"), GetCurveValue(TEXT("DisableRHandIK"))));
+	// DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableLHandIK: %.2f"), GetCurveValue(TEXT("DisableLHandIK"))));
+	// DebugMessage.DebugLines.Add(FString::Printf(TEXT("DisableHandIKRetargeting: %.2f"), GetCurveValue(TEXT("DisableHandIKRetargeting"))));
+	
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
 	MessageSubsystem.BroadcastMessage(EqZeroGameplayTags::EqZero_Anim_Debug, DebugMessage);
 }
@@ -207,7 +212,11 @@ void UEqZeroAnimInstance::UpdateVelocityData()
 
 	// Local
 	LocalVelocity2D = WorldRotation.UnrotateVector(WorldVelocity2D);
+
+	// 0前，右90，左-90，顺时针正，这样一个坐标系
 	LocalVelocityDirectionAngle = UKismetAnimationLibrary::CalculateDirection(WorldVelocity2D, WorldRotation);
+
+	// 比如角色右转，为了转回去，root yaw offset是一个负数。但是角色朝向是向右的，因为瞄准偏移，这个with offset就是角色这种情况下朝向这样的定义
 	LocalVelocityDirectionAngleWithOffset = LocalVelocityDirectionAngle - RootYawOffset;
 
 	LocalVelocityDirection = SelectCardinalDirectionFromAngle(
@@ -375,9 +384,26 @@ void UEqZeroAnimInstance::UpdateBlendWeightData(float DeltaSeconds)
 
 void UEqZeroAnimInstance::UpdateRootYawOffset(float DeltaSeconds)
 {
+	/*
+	 * 每次更新完成 都会变成 BlendOut，因为大部分情况都需要这样，这个函数的最后那里
+	 * Idle的时候 Accumulate
+	 * Start 的时候 Hold
+	 * -> 到Cycle的时候，被这个函数最后一行改成了BlendOut
+	 * Stop 的时候 BlendOut
+	 *
+	 * - 一个效果就是，开始运动一会以后，RootYawOffset 会被平滑地插值回0，角色面向改为了前
+	 */
+
+	// log RootYawOffsetMode
+	// UE_LOG(LogTemp, Error, TEXT("RootYawOffsetMode: %s"), *UEnum::GetValueAsString(RootYawOffsetMode));
+	
 	// 当脚部不移动时（例如在空闲期间），将根节点沿与 Pawn 所有者旋转方向相反的方向偏移，以防止网格随 Pawn 一起旋转。
+	// 官方的翻译比较抽象，其实就是用 Yaw控制旋转，会滑步，我们RotateRootBone一个反方向转回来，到原地的效果
 	if (RootYawOffsetMode == EEqZeroRootYawOffsetMode::Accumulate)
 	{
+		// 为什么是 减去，去掉里面的一下clamp操作
+		// 逻辑其实是 RootYawOffset = RootYawOffset + (- YawDeltaSinceLastUpdate)
+		// 我们要反方向转回来
 		SetRootYawOffset(RootYawOffset - YawDeltaSinceLastUpdate);
 	}
 	

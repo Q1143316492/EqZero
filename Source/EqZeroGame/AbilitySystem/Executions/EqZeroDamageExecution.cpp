@@ -95,7 +95,7 @@ void UEqZeroDamageExecution::Execute_Implementation(const FGameplayEffectCustomE
 		// ...
 	}
 
-	// Determine distance，如果用的话，发起的时候就要在Context里面填充数据
+	// 伤害的距离衰减，如果用的话，发起的时候就要在Context里面填充数据
 	double Distance = WORLD_MAX;
 	if (TypedContext->HasOrigin())
 	{

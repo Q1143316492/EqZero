@@ -3,6 +3,7 @@
 #include "EqZeroPlayerController.h"
 #include "CommonInputTypeEnum.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/ChildActorComponent.h"
 #include "EqZeroLogChannels.h"
 #include "EqZeroCheatManager.h"
 #include "EqZeroPlayerState.h"
@@ -425,10 +426,23 @@ void AEqZeroPlayerController::UpdateHiddenComponents(const FVector& ViewLocation
 		}
 	};
 
-	// 隐藏pawn组件
+	// 隐藏pawn自身组件
 	TInlineComponentArray<UPrimitiveComponent*> PawnComponents;
 	ViewTargetPawn->GetComponents(PawnComponents);
 	AddToHiddenComponents(PawnComponents);
+
+	// 隐藏子Actor上的组件（如ChildActorComponent生成的B_Manny、B_Rifle等）
+	TInlineComponentArray<UChildActorComponent*> ChildActorComponents;
+	ViewTargetPawn->GetComponents(ChildActorComponents);
+	for (UChildActorComponent* CAC : ChildActorComponents)
+	{
+		if (AActor* ChildActor = CAC->GetChildActor())
+		{
+			TInlineComponentArray<UPrimitiveComponent*> ChildPrimitives;
+			ChildActor->GetComponents(ChildPrimitives);
+			AddToHiddenComponents(ChildPrimitives);
+		}
+	}
 
 	bHideViewTargetPawnNextFrame = false;
 
