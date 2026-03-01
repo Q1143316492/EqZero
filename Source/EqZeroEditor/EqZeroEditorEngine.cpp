@@ -59,7 +59,7 @@ FGameInstancePIEResult UEqZeroEditorEngine::PreCreatePIEInstances(const bool bAn
 	if (const AEqZeroWorldSettings* EqZeroWorldSettings = Cast<AEqZeroWorldSettings>(EditorWorld->GetWorldSettings()))
 	{
 		// 它尝试获取当前编辑的关卡的世界设置，并确认该设置里是否勾选了 ForceStandaloneNetMode（强制单机模式）
-		// 这个是给炸弹人那个纯单机关卡用的
+		// 这个是给炸弹人那个纯单机关卡用的，不一定，登录界面也需要，不然有问题
 		if (EqZeroWorldSettings->ForceStandaloneNetMode)
 		{
 			EPlayNetMode OutPlayNetMode;
